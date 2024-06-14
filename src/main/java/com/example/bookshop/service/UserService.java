@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
 
 @Service
 @Transactional
@@ -36,6 +37,7 @@ public class UserService implements UserDetailsService {
     private void validateDuplicateUser(User user) {
 
         log.info("이미 가입된 회원인지 확인합니다.");
+
 
         //이미 저장된 아이디인지 확인하여 중복 회원을 확인
         User findIdUser = userRepository.findByUser_id(user.getUser_id());

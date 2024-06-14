@@ -23,10 +23,9 @@ public class User {
 
     @Id
     @Column(name = "user_id", nullable = false, length = 20)
-    @GeneratedValue
     private String user_id; //회원 Id
 
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private String user_pw; //비밀번호
 
     @Column(nullable = false, length = 10)

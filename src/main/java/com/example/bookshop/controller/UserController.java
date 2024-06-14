@@ -54,23 +54,32 @@ public class UserController {
                                BindingResult bindingResult,
                                Model model){
 
+        log.info(userDTO);
+
        if (bindingResult.hasErrors()){
            log.info("회원가입 오류 : " + bindingResult.hasErrors());
            return "/user/register";
        }
+
+        //비밀번호 일치 여부 확인
+        if (!userDTO.getUser_pw2().equals(userDTO.getUser_pw())){
+            bindingResult.reject("error2", "비밀번호가 일치하지 않습니다.");
+            model.addAttribute("error2","비밀번호가 일치하지 않습니다." );
+            return "/user/register";
+        }
 
        try {
            User user = User
                    .createUser(userDTO, passwordEncoder);
            userService.saveUser(user);
        } catch (IllegalStateException e) {
-
-           model.addAttribute("error", e.getMessage());
+//           bindingResult.reject("error", e.getMessage());
+           model.addAttribute("error3", e.getMessage());
            return "/user/register";
 
        }
 
-        return "/";
+        return "/main";
     }
 
     //회원정보 상세 확인

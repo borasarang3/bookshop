@@ -16,17 +16,19 @@
         </style>
     </th:block>
 
-    <!-- 사용자 스크립트 추가 -->
-    <th:block layout:fragment="script">
-        <script th:inline="javascript">
-            $(document).ready(function (){
-                var errorMessage = [[${error}]];
-                if (errorMessage != null){
-                    alert(errorMessage);
-                }
-            })
-        </script>
-    </th:block>
+<!--     사용자 스크립트 추가-->
+
+<!--    <th:block layout:fragment="script">-->
+<!--        <script th:inline="javascript">-->
+<!--            $(document).ready(function (){-->
+<!--                var errorMessage = [[${error2}]];-->
+<!--                console.log(errorMessage)-->
+<!--                if (errorMessage != null){-->
+<!--                    alert(errorMessage);-->
+<!--                }-->
+<!--            })-->
+<!--        </script>-->
+<!--    </th:block>-->
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -54,15 +56,16 @@
 
             <!-- 이름 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_name" th:field="*{user_name}" class="form-control" id="floatingInput user_name" placeholder="이름">
+                <input type="text" name="user_name" th:field="*{user_name}" class="form-control" id="floatingInput user_name" placeholder="이름" required>
                 <label for="floatingInput user_name">
                     <i class="fa-regular fa-circle-user"></i> 이름
                 </label>
             </div>
 
+
             <!-- 아이디 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_id" th:field="*{user_id}" class="form-control" id="floatingInput userid" placeholder="아이디">
+                <input type="text" name="user_id" th:field="*{user_id}" class="form-control" id="floatingInput userid" placeholder="아이디" required>
                 <label for="floatingInput userid">
                     <i class="fa-regular fa-user"></i> 아이디
                 </label>
@@ -70,7 +73,7 @@
 
             <!-- 비밀번호 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_pw" th:field="*{user_pw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호">
+                <input type="text" name="user_pw" th:field="*{user_pw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호" required>
                 <label for="floatingInput userpw">
                     <i class="bi bi-lock"></i> 비밀번호
                 </label>
@@ -78,49 +81,86 @@
 
             <!-- 비밀번호 확인 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_pw2" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인">
+                <input type="text" name="user_pw2" th:field="*{user_pw2}" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인" required>
                 <label for="floatingInput userpw2">
                     <i class="bi bi-lock"></i> 비밀번호 확인
                 </label>
             </div>
 
+            <!-- 이메일 -->
+            <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
+                <input type="email" name="email" th:field="*{email}" class="form-control" id="floatingInput email" placeholder="이메일" required>
+                <label for="floatingInput email">
+                    <i class="fa-regular fa-envelope"></i> 이메일
+                </label>
+            </div>
+
+
             <!-- 주소 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
                 <input type="text" name="address" th:field="*{address}" class="form-control" id="floatingInput address" placeholder="주소">
                 <label for="floatingInput address">
-                    <i class="bi bi-house-door"></i> 주소
+                    <i class="bi bi-house-door"></i> 주소 (선택)
                 </label>
             </div>
 
             <!-- 권한 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
-                <input type="text" name="role" th:field="*{role}" class="form-control" id="floatingInput role" placeholder="권한">
+                <input type="text" name="role" th:field="*{role}" class="form-control" id="floatingInput role" placeholder="권한" readonly>
                 <label for="floatingInput role">
                     <i class="fa-solid fa-user-shield"></i> 권한
                 </label>
             </div>
 
+            <div th:if="${not #strings.isEmpty(error3)}" class="alert alert-light mb-3 d-grid gap-2 col-6 mx-auto" role="alert"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
+                <p th:text="${error3}" class="fieldError"></p>
+            </div>
 
-            <p th:if="${#fields.hasErrors('user_name')}" th:errors="*{user_name}" class="fieldError">
+            <div th:if="${#fields.hasErrors}" class="alert alert-light mb-3 d-grid gap-2 col-6 mx-auto" role="alert"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
 
-            </p>
-            <p th:if="${#fields.hasErrors('user_id')}" th:errors="*{user_id}" class="fieldError">
+                <p th:text="${error2}" class="fieldError"></p>
 
-            </p>
-            <p th:if="${#fields.hasErrors('user_pw')}" th:errors="*{user_pw}" class="fieldError">
+<!--                <p th:text="${error2}" class="fieldError"></p>-->
 
-            </p>
-            <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError">
 
-            </p>
-            <p th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="fieldError">
 
-            </p>
+                <p th:if="${#fields.hasErrors('user_name')}" th:errors="*{user_name}" class="fieldError">
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('user_id')}" th:errors="*{user_id}" class="fieldError">
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('user_pw')}" th:errors="*{user_pw}" class="fieldError">
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('user_pw2')}" th:errors="*{user_pw2}" class="fieldError">
+
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError">
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError">
+
+                </p>
+
+                <p th:if="${#fields.hasErrors('role')}" th:errors="*{role}" class="fieldError">
+
+                </p>
+
+            </div>
+
+
 
 
 
             <div class="d-grid gap-2 col-6 mx-auto">
-                <button type="button" class="btn btn-primary">회원가입</button>
+                <button type="submit" class="btn btn-primary">회원가입</button>
             </div>
 
 
