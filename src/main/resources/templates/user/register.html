@@ -56,24 +56,24 @@
 
             <!-- 이름 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_name" th:field="*{user_name}" class="form-control" id="floatingInput user_name" placeholder="이름" required>
+                <input type="text" name="userName" th:field="*{userName}" class="form-control" id="floatingInput user_name" placeholder="이름" max = 10 required>
                 <label for="floatingInput user_name">
-                    <i class="fa-regular fa-circle-user"></i> 이름
+                    <i class="fa-regular fa-circle-userMember"></i> 이름
                 </label>
             </div>
 
 
             <!-- 아이디 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_id" th:field="*{user_id}" class="form-control" id="floatingInput userid" placeholder="아이디" required>
+                <input type="text" name="userId" th:field="*{userId}" class="form-control" id="floatingInput userid" placeholder="아이디" min=4, max=20 required>
                 <label for="floatingInput userid">
-                    <i class="fa-regular fa-user"></i> 아이디
+                    <i class="fa-regular fa-userMember"></i> 아이디
                 </label>
             </div>
 
             <!-- 비밀번호 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_pw" th:field="*{user_pw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호" required>
+                <input type="text" name="userPw" th:field="*{userPw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호" min = 8, max = 20 required>
                 <label for="floatingInput userpw">
                     <i class="bi bi-lock"></i> 비밀번호
                 </label>
@@ -81,7 +81,7 @@
 
             <!-- 비밀번호 확인 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="user_pw2" th:field="*{user_pw2}" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인" required>
+                <input type="text" name="userPw2" th:field="*{userPw2}" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인" min = 8, max = 20 required>
                 <label for="floatingInput userpw2">
                     <i class="bi bi-lock"></i> 비밀번호 확인
                 </label>
@@ -101,6 +101,7 @@
                 <input type="text" name="address" th:field="*{address}" class="form-control" id="floatingInput address" placeholder="주소">
                 <label for="floatingInput address">
                     <i class="bi bi-house-door"></i> 주소 (선택)
+                    <!--나중에 주소 api 적용시켜보기-->
                 </label>
             </div>
 
@@ -108,7 +109,7 @@
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
                 <input type="text" name="role" th:field="*{role}" class="form-control" id="floatingInput role" placeholder="권한" readonly>
                 <label for="floatingInput role">
-                    <i class="fa-solid fa-user-shield"></i> 권한
+                    <i class="fa-solid fa-userMember-shield"></i> 권한
                 </label>
             </div>
 
@@ -124,19 +125,19 @@
 
 
 
-                <p th:if="${#fields.hasErrors('user_name')}" th:errors="*{user_name}" class="fieldError">
+                <p th:if="${#fields.hasErrors('user_name')}" th:errors="*{userName}" class="fieldError">
 
                 </p>
 
-                <p th:if="${#fields.hasErrors('user_id')}" th:errors="*{user_id}" class="fieldError">
+                <p th:if="${#fields.hasErrors('user_id')}" th:errors="*{userId}" class="fieldError">
 
                 </p>
 
-                <p th:if="${#fields.hasErrors('user_pw')}" th:errors="*{user_pw}" class="fieldError">
+                <p th:if="${#fields.hasErrors('user_pw')}" th:errors="*{userPw}" class="fieldError">
 
                 </p>
 
-                <p th:if="${#fields.hasErrors('user_pw2')}" th:errors="*{user_pw2}" class="fieldError">
+                <p th:if="${#fields.hasErrors('user_pw2')}" th:errors="*{userPw2}" class="fieldError">
 
 
                 </p>

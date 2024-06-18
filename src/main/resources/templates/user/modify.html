@@ -10,10 +10,86 @@
 
 <div layout:fragment="content">
 
-    <h1>회원 정보 수정 페이지</h1>
+    <h1>회원 정보 수정</h1>
+
+    <form action="/user/modifypost" method="post">
+
+<!--        <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">-->
+<!--            <div th:each="err : ${#fields.allErrors()}" th:text="${err}" />-->
+<!--        </div>-->
+
+
+        <table class="table table-bordered">
+            <thead>
+            <tr class="table-dark">
+                <th colspan="4" th:if="${dto.role.name()  == 'USER'}">[[${dto.userName}]] 회원님의 정보입니다.</th>
+                <th colspan="4" th:unless="${dto.role.name()  == 'USER'}">[[${dto.userName}]] 관리자님의 정보입니다.</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <th scope="row" class="w-25">회원 이름</th>
+                <td >
+                    <input type="text" name="userName" th:value="${dto.userName}" style="border: none" max = 10 required>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">회원 ID</th>
+                <td>
+                    <input type="text" name="userId" th:value="${dto.userId}" style="border: none" readonly>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">비밀번호</th>
+                <td>
+                    <input type="text" name="userPw" style="border: none" min = 8, max = 20 required>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">비밀번호 확인</th>
+                <td>
+                    <input type="text" name="userPw2" style="border: none" min = 8, max = 20 required>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">회원 Email</th>
+                <td>
+                    <input type="text" name="email" th:value="${dto.email}" style="border: none" required>
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">주소</th>
+                <td>
+                    <input type="text" name="address" th:value="${dto.address}" style="border: none">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+
+        <input type="hidden" name="role" th:value="${dto.role}" readonly>
+
+        <div class="d-grid gap-2 col-6 mx-auto">
+            <button type="button" class="btn btn-primary">회원 탈퇴</button>
+            <button type="submit" class="btn btn-primary">회원 정보 수정</button>
+        </div>
+
+    </form>
+
 
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    const result = [[${result}]]
+
+    if (result){
+        alert(result)
+    }
+
+</script>
+
+
 
 </body>
 </html>

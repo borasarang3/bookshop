@@ -10,7 +10,49 @@
 
 <div layout:fragment="content">
 
-    <h1>회원정보 상세 페이지</h1>
+    <h1>회원 정보 확인</h1>
+
+    <table class="table table-bordered">
+        <thead>
+        <tr class="table-dark">
+            <th colspan="4" th:if="${dto.role.name()  == 'USER'}">[[${dto.userName}]] 회원님의 정보입니다.</th>
+            <th colspan="4" th:unless="${dto.role.name()  == 'USER'}">[[${dto.userName}]] 관리자님의 정보입니다.</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="row" class="w-25">회원 이름</th>
+            <td >
+                <input type="text" th:value="${dto.userName}" style="border: none" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="w-25">회원 ID</th>
+            <td>
+                <input type="text" th:value="${dto.userId}" style="border: none" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="w-25">회원 Email</th>
+            <td>
+                <input type="text" th:value="${dto.email}" style="border: none" readonly>
+            </td>
+        </tr>
+        <tr>
+            <th scope="row" class="w-25">주소</th>
+            <td>
+                <input type="text" th:value="${dto.address}" style="border: none" readonly>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <input type="hidden" th:value="${dto.role}" readonly>
+
+    <div class="d-grid gap-2 col-6 mx-auto">
+        <button type="button" onclick="location.href='/user/modify'" class="btn btn-primary">회원 정보 수정하기</button>
+    </div>
+
 
 </div>
 

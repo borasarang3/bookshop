@@ -24,15 +24,19 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (AuthorizeRequests) -> AuthorizeRequests
+                        .requestMatchers("/user/register").permitAll()
+                        .requestMatchers("/user/adminregister").permitAll()
+                        .requestMatchers("/user/**").authenticated()
                         .requestMatchers("css/**", "/js/**", "/**").permitAll()
                         .requestMatchers("/**").permitAll()
         )
                 .csrf((csrf) -> csrf.disable())
 
-                .formLogin(formLogin -> formLogin.loginPage("/login")
-                    .defaultSuccessUrl("/")
-                    .usernameParameter("user_id")
-                    .failureUrl("/login/error")
+                .formLogin(formLogin -> formLogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/")
+                        .usernameParameter("userId")
+                        .failureUrl("/login/error")
                 )
                 .logout((logout) -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))

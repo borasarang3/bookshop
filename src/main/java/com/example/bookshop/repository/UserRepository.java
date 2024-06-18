@@ -1,17 +1,20 @@
 package com.example.bookshop.repository;
 
-import com.example.bookshop.entity.User;
+import com.example.bookshop.entity.UserMember;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<UserMember, String> {
 
     //아이디로 정보 찾기
-    @Query("select u from User u where u.user_id = :user_id")
-    User findByUser_id(String user_id);
+    @Query("select u from UserMember u where u.userId = :userId")
+    UserMember findByUserId(String userId);
 
     //이메일로 정보 찾기
-    User findByEmail(String email);
+    UserMember findByEmail(String email);
+
+    @Query("select u from UserMember u where u.userName = :userName")
+    UserMember findByUserName (String userName);
 
 
 }

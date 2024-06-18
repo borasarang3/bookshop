@@ -1,16 +1,18 @@
 package com.example.bookshop.service;
 
 import com.example.bookshop.constant.Role;
-import com.example.bookshop.entity.User;
+import com.example.bookshop.dto.UserDTO;
+import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.modelmapper.ModelMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
 
 @Service
 @Transactional
@@ -19,40 +21,42 @@ import org.springframework.ui.Model;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final ModelMapper modelMapper;
 
     //회원가입
-    public User saveUser (User user){
+    public UserMember saveUser (UserMember userMember){
 
         log.info("등록된 사용자가 있는지 확인합니다.");
 
-        validateDuplicateUser(user);
+        validateDuplicateUser(userMember);
 
         log.info("신규회원임을 확인했습니다.");
 
-        return userRepository.save(user);
+        return userRepository.save(userMember);
 
     }
 
     //중복회원 검사
-    private void validateDuplicateUser(User user) {
+    private void validateDuplicateUser(UserMember userMember) {
 
         log.info("이미 가입된 회원인지 확인합니다.");
 
 
         //이미 저장된 아이디인지 확인하여 중복 회원을 확인
-        User findIdUser = userRepository.findByUser_id(user.getUser_id());
+        UserMember findIdUserMember = userRepository.findByUserId(userMember.getUserId());
 
         //이미 가입된 id라면
-        if (findIdUser != null){
+        if (findIdUserMember != null){
             log.info("이미 가입한 회원입니다.");
             throw new IllegalStateException("이미 가입한 회원입니다.");
         }
 
         //이미 저장된 이메일인지 확인하여 중복 회원을 확인
-        User findUser = userRepository.findByEmail(user.getEmail());
+        UserMember findUserMember = userRepository.findByEmail(userMember.getEmail());
 
         //이미 가입된 email이라면
-        if (findUser != null){
+        if (findUserMember != null){
             log.info("이미 가입한 회원입니다.");
             throw new IllegalStateException("이미 가입한 회원입니다.");
         }
@@ -61,20 +65,23 @@ public class UserService implements UserDetailsService {
 
 
     @Override
-    public UserDetails loadUserByUsername(String user_id) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String userId) throws UsernameNotFoundException {
 
-        User user = this.userRepository.findByUser_id(user_id);
+        log.info("진입정보" + userId);
 
-        if (user == null){
-            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다." + user_id);
+        UserMember userMember = this.userRepository.findByUserId(userId);
+        log.info(userMember);
+
+        if (userMember == null){
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다." + userId);
         }
 
-        log.info("현재 로그인 상태 : " + user);
-        log.info("현재 로그인 권한 : " + user.getRole().name());
+        log.info("현재 로그인 상태 : " + userMember);
+        log.info("현재 로그인 권한 : " + userMember.getRole().name());
 
         String role = "";
 
-        if("ADMIN".equals(user.getRole().name())){   //auth 컬럼을 추가로 지정해서 사용
+        if("ADMIN".equals(userMember.getRole().name())){   //auth 컬럼을 추가로 지정해서 사용
             log.info("관리자");
             role = Role.ADMIN.name();
 //            authorities.add(new SimpleGrantedAuthority(Role.ADMIN.name()));
@@ -86,10 +93,63 @@ public class UserService implements UserDetailsService {
         }
 
         return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getUser_id())
-                .password(user.getUser_pw())
+                .username(userMember.getUserId())
+                .password(userMember.getUserPw())
                 .roles(role)
                 .build();
+    }
+
+    //회원정보 읽기
+    public UserDTO read(String userName){
+
+        UserMember userMember = userRepository.findByUserId(userName);
+
+        if (userMember == null){
+            log.info("null임");
+            throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+        }
+
+        log.info(userMember);
+
+        UserDTO userDTO = modelMapper.map(userMember, UserDTO.class);
+
+        return userDTO;
+
+
+    }
+
+    //회원정보 수정
+    public UserDTO modify(UserDTO userDTO){
+
+        //dto에서 가져온 값을 엔티티에 저장
+        //컨트롤러에서 보낸 dto 값이 userDTO에 있음
+
+        log.info("service에서 받은 DTO 확인 : " + userDTO);
+
+        log.info("passwordEncoder 적용 전 : " + userDTO.getUserPw());
+        userDTO.setUserPw(passwordEncoder.encode(userDTO.getUserPw()));
+        log.info("passwordEncoder 적용 후 : " + userDTO.getUserPw());
+
+        log.info("userDTO 확인 : " + userDTO);
+
+        UserMember userMember = UserMember.of(userDTO);
+
+        log.info("userMember 확인 : " + userMember);
+
+        userRepository.save(userMember); //entity 저장
+
+//        UserMember userMember = userRepository.findByUserId(userDTO.getUserId());
+//
+//        log.info("passwordEncoder 적용 전 : " + userMember.getUserPw());
+//        userMember.setUserPw(passwordEncoder.encode(userMember.getUserPw()));
+//        log.info("passwordEncoder 적용 후 : " + userMember.getUserPw());
+//
+//        log.info("userMember 확인 : " + userMember);
+
+//        userRepository.save(userMember); //entity 저장
+
+        return userDTO;
+
     }
 
 
