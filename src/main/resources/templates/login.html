@@ -80,5 +80,17 @@
 
 </div>
 
+<script layout:fragment="script" th:inline="javascript">
+
+    const result = [[${result}]]
+
+    if (result){
+        alert(result)
+    }
+
+
+
+</script>
+
 </body>
 </html>

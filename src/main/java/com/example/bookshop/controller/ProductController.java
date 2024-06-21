@@ -28,7 +28,7 @@ public class ProductController {
         //post 접근 불가로 get 변경해둠
     }
 
-    @PostMapping("/registerpost")
+    @PostMapping("/register")
     public String productRegisterPost(){
         return "/product/register";
     }

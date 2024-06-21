@@ -188,22 +188,26 @@ public class UserController {
         //post 접근 불가로 get 변경해둠
         //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 수정 가능
 
-        log.info("현재 로그인 회원 이름 : " + principal.getName());
+        model.addAttribute("dto", userService.read(principal.getName()));
 
-        UserDTO loginUser = userService.read(principal.getName());
+        return "/user/modify";
 
-        if (userDTO.getUserId().equals(principal.getName())
-                || loginUser.getRole().name() == "ADMIN" ){
-
-            model.addAttribute("dto", userService.read(principal.getName()));
-
-            return "/user/modify";
-        } else {
-
-            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
-
-            return "redirect:/main";
-        }
+//        log.info("현재 로그인 회원 이름 : " + principal.getName());
+//
+//        UserDTO loginUser = userService.read(principal.getName());
+//
+//        if (userDTO.getUserId().equals(principal.getName())
+//                || loginUser.getRole().name() == "ADMIN" ){
+//
+//            model.addAttribute("dto", userService.read(principal.getName()));
+//
+//            return "/user/modify";
+//        } else {
+//
+//            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+//
+//            return "redirect:/main";
+//        }
 
 
     }
