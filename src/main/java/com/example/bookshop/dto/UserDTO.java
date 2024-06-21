@@ -8,6 +8,10 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -38,6 +42,10 @@ public class UserDTO {
     private String address; //주소
 
     private Role role; //권한
+
+    private LocalDateTime regidate; //회원가입일
+
+    private LocalDateTime modidate; //회원정보 수정일
 
     private static ModelMapper modelMapper = new ModelMapper();
 

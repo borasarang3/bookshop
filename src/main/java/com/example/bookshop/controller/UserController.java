@@ -7,6 +7,7 @@ import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,6 +24,9 @@ import java.security.Principal;
 @RequiredArgsConstructor
 @RequestMapping("/user")
 public class UserController {
+
+    //나중에 세부적으로 막아보기
+    //403 에러가 먼저 떠버림...
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -55,6 +59,7 @@ public class UserController {
     @PostMapping("/register")
     public String RegisterPost(@Valid UserDTO userDTO,
                                BindingResult bindingResult,
+                               RedirectAttributes redirectAttributes,
                                Model model){
 
         log.info(userDTO);
@@ -81,31 +86,125 @@ public class UserController {
            return "/user/register";
        }
 
+        redirectAttributes.addFlashAttribute("result", "회원가입이 완료되었습니다.");
 
-        return "/main";
+        return "redirect:/main";
     }
 
     //회원정보 상세 확인
     @GetMapping ("/read")
-    public String userRead(Principal principal, Model model, UserDTO userDTO) {
+    public String userRead(Principal principal, Model model,
+                           UserDTO userDTO, RedirectAttributes redirectAttributes) {
         //post 접근 불가로 get 변경해둠
+        //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 열람 가능
+        // 로그인한 사람의 권한을 찾아와야 함
+        // 로그인 한 사람의 이름으로 정보를 찾고 권한 반환 > 비교하기
 
         log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        //기본
+        // 로그인한 사람의 이름으로 정보를 찾아옴
 
         userDTO = userService.read(principal.getName());
         log.info("열람하는 user_name : " + userDTO);
 
-        model.addAttribute("dto", userService.read(principal.getName()));
+        if (userDTO.getUserId().equals(principal.getName())
+                || loginUser.getRole().name() == "ADMIN" ) {
+            model.addAttribute("dto", userService.read(principal.getName()));
 
-        return "/user/read";
+            return "/user/read";
+        } else {
+
+            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+
+            return "/main";
+        }
+
+
+    }
+
+    @GetMapping("/findUser")
+    public String find (UserDTO userDTO, Model model,
+                      Principal principal, RedirectAttributes redirectAttributes){
+
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        if ( loginUser.getRole().name() == "ADMIN" ){
+            return "/user/findUser";
+        } else {
+
+            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+
+            return "redirect:/main";
+        }
+
+
+    }
+
+    @PostMapping("/findUser")
+    public String findUser(UserDTO userDTO, Model model,
+                           Principal principal, RedirectAttributes redirectAttributes){
+
+        //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 열람 가능
+
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        //해야 하는 것
+        // 회원 목록에서 아이디를 눌렀을 때 아이디로 정보를 찾아옴
+        // 목록에서 아이디를 누름(submit)
+        // 컨트롤러에서 아이디를 받아서 서비스에서 아이디로 정보를 찾음
+        // 찾은 정보를 열람
+
+        log.info("받은 userDTO : " + userDTO);
+
+        userDTO = userService.read(userDTO.getUserId());
+
+        if (userDTO.getUserId().equals(principal.getName())
+                || loginUser.getRole().name() == "ADMIN" ) {
+
+            model.addAttribute("dto", userDTO);
+
+            return "/user/read";
+
+        } else {
+
+            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+
+            return "redirect:/main";
+        }
+
     }
 
     //회원정보 수정 페이지 이동
     @GetMapping("/modify")
-    public void userModify(Principal principal, Model model, UserDTO userDTO) {
+    public String userModify(Principal principal, Model model, UserDTO userDTO,
+                             RedirectAttributes redirectAttributes) {
         //post 접근 불가로 get 변경해둠
+        //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 수정 가능
 
-        model.addAttribute("dto", userService.read(principal.getName()));
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        if (userDTO.getUserId().equals(principal.getName())
+                || loginUser.getRole().name() == "ADMIN" ){
+
+            model.addAttribute("dto", userService.read(principal.getName()));
+
+            return "/user/modify";
+        } else {
+
+            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+
+            return "redirect:/main";
+        }
+
 
     }
 
@@ -122,6 +221,8 @@ public class UserController {
 
         if (bindingResult.hasErrors()){
             log.info("회원 수정 오류 : " + bindingResult.hasErrors());
+            bindingResult.reject("error2", "회원 정보를 다시 확인해주세요.");
+            redirectAttributes.addFlashAttribute("result", "회원 정보를 다시 확인해주세요.");
             return "redirect:/user/modify";
         }
 
@@ -133,11 +234,10 @@ public class UserController {
             userService.modify(userDTO);
             redirectAttributes.addFlashAttribute("result", "회원정보가 수정되었습니다.");
 
-            return "/main";
+            return "redirect:/main";
 
         } else {
 
-            bindingResult.reject("error2", "비밀번호가 일치하지 않습니다.");
             redirectAttributes.addFlashAttribute("result","비밀번호가 일치하지 않습니다." );
 
             return "redirect:/user/modify";
@@ -148,14 +248,37 @@ public class UserController {
 
     //회원탈퇴
     @PostMapping("/remove")
-    public void userRemove() {
+    public String userRemove(UserDTO userDTO) {
+
+        userService.remove(userDTO);
+
+        return "redirect:/logout";
 
     }
 
     //회원목록
     @GetMapping("/list")
-    public void userList() {
+    public String userList(Model model, Principal principal, RedirectAttributes redirectAttributes) {
         //post 접근 불가로 get 변경해둠
+
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        if ( loginUser.getRole().name() == "ADMIN" ){
+
+            model.addAttribute("userDTOList",  userService.allUserList() );
+
+            return "/user/list";
+
+        } else {
+
+            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
+
+            return "redirect:/main";
+        }
+
+
     }
 
     //구매 이력 확인

@@ -10,14 +10,13 @@
 
 <div layout:fragment="content">
 
-    <h1>회원 정보 수정</h1>
+    <h1 class="fw-bold">회원 정보 수정</h1>
 
     <form action="/user/modifypost" method="post">
 
 <!--        <div class="alert alert-danger" role="alert" th:if="${#fields.hasAnyErrors()}">-->
 <!--            <div th:each="err : ${#fields.allErrors()}" th:text="${err}" />-->
 <!--        </div>-->
-
 
         <table class="table table-bordered">
             <thead>
@@ -69,7 +68,7 @@
         <input type="hidden" name="role" th:value="${dto.role}" readonly>
 
         <div class="d-grid gap-2 col-6 mx-auto">
-            <button type="button" class="btn btn-primary">회원 탈퇴</button>
+            <button type="button" class="btn btn-primary removeBtn">회원 탈퇴</button>
             <button type="submit" class="btn btn-primary">회원 정보 수정</button>
         </div>
 
@@ -86,6 +85,24 @@
     if (result){
         alert(result)
     }
+
+
+    $(document).ready(function (){
+
+        let removeBtn = $(".removeBtn"); // 탈퇴 버튼
+        const formBs = document.querySelector("form");
+
+        removeBtn.on("click", function () {
+            formBs.action = `/user/remove`;
+            formBs.method = "post";
+            alert("회원 탈퇴가 완료되었습니다.")
+            formBs.submit();
+        });
+
+    })
+
+
+
 
 </script>
 

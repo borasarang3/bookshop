@@ -10,9 +10,134 @@
 
 <div layout:fragment="content">
 
-    <h1>카테고리</h1>
+    <h1 class="fw-bold">카테고리</h1>
+    <p>
+        카테고리 목록 및 수정을 할 수 있습니다.
+        <br>
+        카테고리 내의 상품 관리도 가능합니다.
+    </p>
+
+
+    <ul class="list-group">
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+            <div class="ms-2 m-auto">
+                <div class="fw-bold">분류</div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm addBtn"
+                    data-bs-toggle="modal" data-bs-target="#new-modal">추가</button>
+        </li>
+        <!--관리는 상품을 만들고나서 구현하기-->
+        <!--더미 값은 카테고리 추가 기능 구현 후 th로 리스트로 출력-->
+        <li class="list-group-item d-flex list-group-item-action justify-content-between align-items-start">
+            <div class="ms-2 m-auto">
+                <div>건강/취미</div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 managBtn"
+                    data-bs-toggle="modal" data-bs-target="#new-modal">관리</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn"
+                    data-bs-toggle="modal" data-bs-target="#new-modal">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
+        </li>
+
+        <li class="list-group-item d-flex list-group-item-action justify-content-between align-items-start">
+            <div class="ms-2 m-auto">
+                <div>경제경영</div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 managBtn">관리</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
+        </li>
+
+        <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+            <div class="ms-2 m-auto">
+                <div>과학</div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 managBtn">관리</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
+        </li>
+
+        <li class="list-group-item d-flex justify-content-between align-items-start">
+            <div class="ms-2 m-auto">
+                <div>어린이</div>
+            </div>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 managBtn">관리</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
+        </li>
+
+    </ul>
+
+
+    <div class="modal" id="new-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Modal title</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary">등록</button>
+                    <button type="button" class="btn btn-outline-secondary">수정</button>
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function () {
+        let modal = $("#new-modal"); // 모달 전체
+        let listGroup = $(".list-group-item");
+
+        let addBtn = $(".addBtn"); // 추가 버튼
+        let managBtn = $(".managBtn"); // 관리 버튼
+        let modiBtn = $(".modiBtn"); // 수정 버튼
+        let removBtn = $(".removBtn"); // 삭제 버튼
+
+        //처음에는 숨겨져 있다가 마우스를 올리면
+        // 해당 행의 버튼만 보이도록
+        // addBtn.hide();
+        // managBtn.hide();
+        // modiBtn.hide();
+        // removBtn.hide();
+        //
+        // listGroup.on("mouseover", function (){
+        //     addBtn.show();
+        //     managBtn.show();
+        //     modiBtn.show();
+        //     removBtn.show();
+        // })
+
+
+        //모달창을 여는 버튼의 텍스트가 추가, 관리, 수정일 경우
+        //스토리보드를 참조하여 각 텍스트에 맞는 형태로 모달창을 띄우고
+        //해당 기능에 알맞은 기능을 적용하기
+
+        addBtn.on("click", function () {
+            console.log(addBtn.text()) //버튼 text 가져오기
+        })
+
+
+
+
+
+    })
+
+
+</script>
+
 
 </body>
 </html>

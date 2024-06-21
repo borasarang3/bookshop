@@ -15,19 +15,19 @@ public class CartController {
     public void cartList(){
 
     }
-
+    @ResponseBody
     @PostMapping("/plus")
     public void cartPlus(){
         //RestController
 
     }
-
+    @ResponseBody
     @PutMapping("/update/{cartItemId}")
     public String cartUpdate(){
         //RestController
         return "/cart/list";
     }
-
+    @ResponseBody
     @DeleteMapping("/remove/{cartItemId}")
     public String cartRemove(){
         //RestController

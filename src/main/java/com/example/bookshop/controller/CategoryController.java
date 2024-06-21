@@ -16,24 +16,24 @@ public class CategoryController {
 
     }
 
+    @ResponseBody
     @PostMapping("/register")
     public String categoryRegister(){
-        //RestController
         return "/category";
     }
-
+    @ResponseBody
     @PutMapping("/modify")
     public String categoryModify(){
         //RestController
         return "/category";
     }
-
+    @ResponseBody
     @GetMapping("/product")
     public String categoryProduct(){
         //RestController
         return "/category";
     }
-
+    @ResponseBody
     @DeleteMapping("/remove")
     public String categoryRemove(){
         return "/category";

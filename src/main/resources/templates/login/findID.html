@@ -10,9 +10,83 @@
 
 <div layout:fragment="content">
 
-    <h1>아이디 찾기</h1>
+    <div class="card-group">
+
+        <div class="card border-dark">
+            <div class="card-body">
+
+                <div class="h3 fw-bold px-2">아이디 찾기</div>
+                <h6 class="px-2">본인확인용 이름과 이메일을 적어주세요.</h6>
+
+                <form action="/login/findID" method="post">
+
+                    <div class="col">
+                        <div class="row mt-4">
+                            <label for="inputName" class="col-sm-2 col-form-label">이름</label>
+                            <div class="col">
+                                <input type="text" name="userName" class="form-control" id="inputName" required>
+                            </div>
+                        </div>
+                        <div class="row mt-4">
+                            <label for="inputEmail" class="col-sm-2 col-form-label">이메일</label>
+                            <div class="col">
+                                <input type="email" name="email" class="form-control" id="inputEmail" required>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="d-grid gap-2 col-6 ms-auto">
+                                <button type="submit" class="btn btn-primary">찾기</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-dark">
+
+            <div class="card-body">
+
+                <div class="col">
+                    <div class="text-center form-floating mb-3 d-grid gap-2 col-6 mx-auto">
+                        <a class="h1 fw-bold" href="/" style="text-decoration: none">책,보라</a>
+                    </div>
+
+
+                    <div th:if="${not #strings.isEmpty(result)}" class="text-center alert alert-light mb-3 d-grid gap-2 col mx-auto" role="alert"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
+                        <p th:text="${result}" class="text-danger fieldError"> dddd </p>
+                    </div>
+
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/login/findPW">비밀번호 찾기</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/user/register">회원가입</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/login/">로그인</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
+
+
+
 
 </div>
-
 </body>
 </html>

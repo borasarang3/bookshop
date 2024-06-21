@@ -24,6 +24,8 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (AuthorizeRequests) -> AuthorizeRequests
+                        .requestMatchers("/user/list").hasRole("ADMIN")
+                        .requestMatchers("/user/findUser").hasRole("ADMIN")
                         .requestMatchers("/user/register").permitAll()
                         .requestMatchers("/user/adminregister").permitAll()
                         .requestMatchers("/user/**").authenticated()

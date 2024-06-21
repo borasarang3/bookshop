@@ -15,18 +15,18 @@ public class OrdersController {
     public void orders(){
 
     }
-
+    @ResponseBody
     @PutMapping("/modify")
     public void ordersModify(){
         //RestController
     }
-
+    @ResponseBody
     @DeleteMapping("/remove")
     public String ordersRemove(){
         //RestController
         return "/orders";
     }
-
+    @ResponseBody
     @PostMapping("/buy")
     public String ordersBuy(){
         //RestController

@@ -10,10 +10,91 @@
 
 <div layout:fragment="content">
 
-    <h1>회원 목록</h1>
+    <div class="h1 fw-bold text-center">회원 목록</div>
+
+
+        <table class="table table-bordered text-center">
+            <thead>
+            <tr class="table-dark">
+                <th scope="col">아이디</th>
+                <th scope="col">이름</th>
+                <th scope="col">이메일</th>
+                <th scope="col">회원등록일</th>
+                <th scope="col">회원수정일</th>
+                <th scope="col">권한</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr role="row" th:each="dto: ${userDTOList}">
+                <th scope="row" class="readBtn" >
+                    <a class="link-dark "  href="#" style="text-decoration: none">
+                        [[${dto.userId}]]
+                        <!--값이 계속 배열로 가네... 배열로 받아서 뽑아야 하나...-->
+                    </a>
+                </th>
+                <th scope="row" >[[${dto.userName}]]</th>
+                <th scope="row">[[${dto.email}]]</th>
+                <th scope="row" class="w-25" th:text="${#temporals.format(dto.regidate, 'yyyy-MM-dd HH:mm:ss')}"></th>
+                <th scope="row" class="w-25" th:text="${#temporals.format(dto.modidate, 'yyyy-MM-dd HH:mm:ss')}"></th>
+                <th scope="row">[[${dto.role}]]</th>
+            </tr>
+            </tbody>
+        </table>
+
+    <form>
+
+
+    </form>
+
+
 
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    const result = [[${result}]]
+
+    if (result){
+        alert(result)
+    }
+
+
+    $(document).ready(function (){
+
+        let readBtn = document.querySelector(".table"); // 정보 읽어오기 버튼
+        const formBs = document.querySelector("form");
+
+        readBtn.addEventListener("click", function (e) {
+            alert("실행")
+            e.preventDefault();
+            e.stopPropagation();
+            if(e.target.tagName != "A"){
+                return false;
+            }
+
+            let find = e.target.innerText
+
+            console.log(find)
+            let inp =  `<input class="ss" name="userId" value="${find}">`
+            formBs.innerHTML =  inp;
+
+            formBs.action = `/user/findUser`;
+            formBs.method = "post";
+            // alert("회원 탈퇴가 완료되었습니다.")
+            formBs.submit()
+        });
+
+
+    })
+
+
+
+
+</script>
+
+
+
 
 </body>
 </html>

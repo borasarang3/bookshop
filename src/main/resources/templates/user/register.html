@@ -18,17 +18,16 @@
 
 <!--     사용자 스크립트 추가-->
 
-<!--    <th:block layout:fragment="script">-->
-<!--        <script th:inline="javascript">-->
-<!--            $(document).ready(function (){-->
-<!--                var errorMessage = [[${error2}]];-->
-<!--                console.log(errorMessage)-->
-<!--                if (errorMessage != null){-->
-<!--                    alert(errorMessage);-->
-<!--                }-->
-<!--            })-->
-<!--        </script>-->
-<!--    </th:block>-->
+
+    <script layout:fragment="script" th:inline="javascript">
+        $(document).ready(function (){
+                const result = [[${result}]]
+
+                if (result){
+                    alert(result)
+                }
+            })
+    </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" integrity="sha512-z3gLpd7yknf1YoNbCzqRKc4qyor8gaKU1qmn+CShxbuBusANI9QpRohGBreCFkKxLhei6S9CQXFEbbKuqLg0DA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -39,7 +38,7 @@
     <div layout:fragment="content">
 
         <div class="text-center form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-        <a class="h1" href="/" style="text-decoration: none">책,보라</a>
+        <a class="h1 fw-bold" href="/" style="text-decoration: none">책,보라</a>
         </div>
 
         <form action="/user/register" method="post" th:object="${userDTO}">
@@ -73,7 +72,7 @@
 
             <!-- 비밀번호 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="userPw" th:field="*{userPw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호" min = 8, max = 20 required>
+                <input type="text" name="userPw" th:field="*{userPw}" class="form-control" id="floatingInput userpw" placeholder="비밀번호" min=8, max=20 required>
                 <label for="floatingInput userpw">
                     <i class="bi bi-lock"></i> 비밀번호
                 </label>
@@ -81,7 +80,7 @@
 
             <!-- 비밀번호 확인 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto">
-                <input type="text" name="userPw2" th:field="*{userPw2}" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인" min = 8, max = 20 required>
+                <input type="text" name="userPw2" th:field="*{userPw2}" class="form-control" id="floatingInput userpw2" placeholder="비밀번호 확인" min=8, max=20 required>
                 <label for="floatingInput userpw2">
                     <i class="bi bi-lock"></i> 비밀번호 확인
                 </label>

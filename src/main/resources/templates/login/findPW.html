@@ -5,14 +5,254 @@
 <head>
     <meta charset="UTF-8">
     <title>비밀번호 찾기</title>
+    <script th:inline="javascript">
+
+        $(document).ready(function () {
+            console.log("스크립트 확인")
+
+            let checkText = $(".checkText"); //안내 문구
+
+            let ErrorAlert = $(".ErrorAlert"); // 에러창
+            let fieldError = $(".fieldError"); // 에러창 텍스트
+
+            let inputName = $(".inputName"); //이름 div
+            let inputEmail = $(".inputEmail"); //이메일 div
+            let inputId = $(".inputId"); //아이디 div
+            let inputPassword = $(".inputPassword"); //비밀번호 div
+            let inputPassword2 = $(".inputPassword2"); //비밀번호 확인 div
+
+            let userName = $(".userName");
+            let email = $(".email");
+            let userId = $(".userId");
+            let userPw = $(".userPw");
+            let userPw2 = $(".userPw2");
+
+            let findBtn = $(".findBtn"); // 찾기 버튼
+            let changeBtn = $(".changeBtn"); // 비밀번호 수정 버튼
+
+
+            //처음 들어오면 이름, 이메일, 아이디만 입력하도록
+            //비밀번호 관련창 숨기기
+            inputPassword.hide();
+            inputPassword2.hide();
+            changeBtn.hide();
+            ErrorAlert.toggleClass('hidden');
+            fieldError.empty();
+            fieldError.hide();
+
+            //1. 이름, 이메일, 아이디를 입력받는다.
+            //2. 입력받은 정보로 회원이 있는지 확인한다.
+            //3-1. 회원이 없다면 오류 메시지를 출력한다. (종료)
+            //3-2. 회원이 있다면 '같은 페이지'에서 다시 비밀번호를 입력받는다.
+            //4-1. 두 비밀번호가 같고 길이가 8~20자라면 변경. 완료 메시지 출력. (종료)
+            //4-2. 비밀번호 조건이 충족되지 않으면 오류 메시지 출력. (종료)
+
+            //찾기 버튼 눌렀을 시 // 회원 정보 확인
+            findBtn.on("click", function (){
+                console.log("이름 : " + userName.val())
+                console.log("이메일 : " + email.val())
+                console.log("아이디 : " + userId.val())
+
+                fieldError.empty();
+
+                let userInfo = {
+                    "userName" : userName.val(),
+                    "email": email.val(),
+                    "userId" : userId.val()
+                }
+
+                $.ajax({
+                    url : "/login/findPW",
+                    type : "post",
+                    contentType:"application/json; charset=utf-8",
+                    data : JSON.stringify(userInfo),
+                    dataType : "text",
+                    success : function (result) {
+                        console.log(result)
+                        if(result.toString() == "aaa"){
+                            ErrorAlert.toggleClass('hidden');
+                            fieldError.show()
+                            fieldError.append("등록된 회원이 존재하지 않습니다.")
+
+                        }else if (result.toString() == "bbb") {
+                            findBtn.hide()
+                            inputName.hide()
+                            inputEmail.hide()
+                            inputId.hide()
+
+                            checkText.empty();
+                            checkText.append("변경할 비밀번호를 적어주세요.")
+
+                            inputPassword.show();
+                            inputPassword2.show();
+                            changeBtn.show();
+                        }
+                    },
+                    error : function (result) {
+                        console.log(result.responseText)
+                    }
+                })
+
+
+
+
+            })
+
+            changeBtn.on("click", function () {
+                console.log("받은 비밀번호 : " + userPw.val())
+                console.log("확인 비밀번호 : " + userPw2.val())
+
+                fieldError.empty();
+
+                let userInfo = {
+                    "userName" : userName.val(),
+                    "email": email.val(),
+                    "userId" : userId.val(),
+                    "userPw" : userPw.val(),
+                    "userPw2" : userPw2.val()
+                }
+
+                $.ajax({
+                    url : "/login/changePw",
+                    type : "post",
+                    contentType:"application/json; charset=utf-8",
+                    data : JSON.stringify(userInfo),
+                    dataType : "text",
+                    success : function (result) {
+                        console.log(result)
+                        if(result.toString() == "aaa"){
+                            ErrorAlert.toggleClass('hidden');
+                            fieldError.show()
+                            fieldError.append("변경할 비밀번호를 확인해주세요.")
+
+                        }else if (result.toString() == "bbb") {
+                           alert("비밀번호 변경이 완료되었습니다.")
+                            let url = `/login`;
+                            location.replace(url);
+                        }
+                    },
+                    error : function (result) {
+                        console.log(result.responseText)
+                    }
+                })
+
+
+            })
+
+
+        })
+    </script>
+
+
+
+
 </head>
 <body>
 
 <div layout:fragment="content">
 
-    <h1>비밀번호 찾기</h1>
+    <div class="card-group">
+
+        <div class="card border-dark">
+            <div class="card-body">
+
+                <div class="h3 fw-bold px-2">비밀번호 찾기</div>
+                <h6 class="checkText px-2">본인확인용 이름과 이메일, 아이디를 적어주세요.</h6>
+
+                <form>
+
+                    <div class="col">
+                        <div class="row mt-4 inputName">
+                            <label for="inputName" class="col-sm-2 col-form-label">이름</label>
+                            <div class="col">
+                                <input type="text" name="userName" class="form-control userName" id="inputName" required>
+                            </div>
+                        </div>
+                        <div class="row mt-4 inputEmail">
+                            <label for="inputEmail" class="col-sm-2 col-form-label">이메일</label>
+                            <div class="col">
+                                <input type="email" name="email" class="form-control email" id="inputEmail" required>
+                            </div>
+                        </div>
+                        <div class="row mt-4 inputId">
+                            <label for="inputId" class="col-sm-2 col-form-label">아이디</label>
+                            <div class="col">
+                                <input type="text" name="userId" class="form-control userId" id="inputId" required>
+                            </div>
+                        </div>
+
+                        <div class="row mt-4 inputPassword">
+                            <label for="inputPassword" class="col-sm-2 col-form-label">비밀번호</label>
+                            <div class="col">
+                                <input type="text" name="userPw" class="form-control userPw" id="inputPassword" min=8, max=20 required>
+                            </div>
+                        </div>
+                        <div class="row mt-4 inputPassword2">
+                            <label for="inputPassword2" class="col-sm-2 col-form-label">비밀번호 확인</label>
+                            <div class="col">
+                                <input type="text" name="userPw2" class="form-control userPw2" id="inputPassword2" min=8, max=20 required>
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="d-grid gap-2 col-6 ms-auto">
+                                <button type="button" class="btn btn-primary changeBtn">변경</button>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-dark">
+
+            <div class="card-body">
+
+                <div class="col">
+                    <div class="text-center form-floating mb-3 d-grid gap-2 col-6 mx-auto">
+                        <a class="h1 fw-bold" href="/" style="text-decoration: none">책,보라</a>
+                    </div>
+
+                    <div class="ErrorAlert text-center alert alert-light mb-3 d-grid gap-2 col mx-auto" role="alert"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
+                        <p class="text-danger fieldError"></p>
+                    </div>
+
+                    <div class="row mt-3">
+                        <div class="d-grid gap-2 col-6 mx-auto">
+                            <button type="submit" class="btn btn-primary findBtn">찾기</button>
+                        </div>
+                    </div>
+
+                    <ul class="nav justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/login/findID">아이디 찾기</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/user/register">회원가입</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link link-secondary" href="/login">로그인</a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+    </div>
+
+
 
 </div>
+
+
+
 
 </body>
 </html>

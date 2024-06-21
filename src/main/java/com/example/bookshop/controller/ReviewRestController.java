@@ -10,24 +10,24 @@ import org.springframework.web.bind.annotation.*;
 @Log4j2
 @RequestMapping("/review")
 public class ReviewRestController {
-
+    @ResponseBody
     @GetMapping("/list")
     public void ReviewRead(){
         //RestController
     }
-
+    @ResponseBody
     @PostMapping("/register")
     public void ReviewRegister(){
         //RestController
 
     }
-
+    @ResponseBody
     @PutMapping("/modify")
     public String ReviewModify(){
         //RestController
         return "/product/read";
     }
-
+    @ResponseBody
     @DeleteMapping("/remove")
     public String ReviewRemove(){
         //RestController

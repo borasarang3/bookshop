@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -107,6 +110,7 @@ public class UserService implements UserDetailsService {
         if (userMember == null){
             log.info("null임");
             throw new UsernameNotFoundException("사용자를 찾을 수 없습니다.");
+
         }
 
         log.info(userMember);
@@ -152,7 +156,86 @@ public class UserService implements UserDetailsService {
 
     }
 
+    // 회원 탈퇴
+    public void remove(UserDTO userDTO) {
+
+        userRepository.deleteById(userDTO.getUserId());
+
+    }
+
+    // 회원 목록
+    public List<UserDTO> allUserList(){
+
+        List<UserMember> userMemberList = userRepository.findAll();
+
+        List<UserDTO> userDTOList = userMemberList.stream()
+                .map(userMember -> modelMapper.map(userMember, UserDTO.class))
+                .collect(Collectors.toList());
+
+        userDTOList.forEach(userDTO -> log.info(userDTO));
+
+        return userDTOList;
+
+    }
 
 
+    //아이디 찾기
+    public UserDTO findId(String userName, String email) {
+
+        UserMember userMember = userRepository.findByUserNameAndEmail(userName, email);
+
+        if(userMember == null){
+            //throw로 보낼시 모든 메서드를 중단하고 바로 예외를 내보내기 때문에
+            //값이 컨트롤러로 가지 않음 // return과는 달라짐
+            //userDTO를 새로 만들면 그 안의 값은 null 값이나 생성자가 있기 때문에 null이 아님
+            //null로 보내려면 return null을 해야 함
+            return null;
+
+        }
+
+        UserDTO userDTO = UserDTO.of(userMember);
+
+        return userDTO;
+
+    }
+
+    //유저 찾기
+    public UserDTO checkUser(String userName, String email, String userId){
+        UserMember userMember =
+                userRepository.findByUserNameAndEmailAndUserId(userName, email, userId);
+
+        if (userMember == null){
+            return null;
+        }
+
+        UserDTO userDTO = UserDTO.of(userMember);
+
+        return userDTO;
+
+    }
+
+    public void changePw (UserDTO userDTO){
+
+        log.info("service에서 받은 DTO 확인 : " + userDTO);
+
+        log.info("passwordEncoder 적용 전 : " + userDTO.getUserPw());
+        userDTO.setUserPw(passwordEncoder.encode(userDTO.getUserPw()));
+        log.info("passwordEncoder 적용 후 : " + userDTO.getUserPw());
+
+        log.info("DTO 확인 : " + userDTO);
+
+        UserMember userMember =
+                userRepository.
+                        findByUserNameAndEmailAndUserId(userDTO.getUserName(),
+                                userDTO.getEmail(),
+                                userDTO.getUserId());
+
+        userMember.setUserPw(userDTO.getUserPw());
+
+        log.info("userMember 확인 : " + userMember);
+
+        userRepository.save(userMember);
+
+    }
 
 }
