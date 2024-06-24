@@ -44,7 +44,7 @@ public class ProductDTO {
     private Long productAmount; //상품 수량
 
     @NotNull(message = "카테고리를 설정해주세요.")
-    private Long category; //카테고리
+    private Long categoryid; //카테고리
 
     @NotNull
     private ItemSellStatus itemSellStatus; //상품 판매 상태

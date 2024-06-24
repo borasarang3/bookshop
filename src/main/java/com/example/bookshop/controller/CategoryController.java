@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -34,6 +35,9 @@ public class CategoryController {
         log.info("현재 로그인 회원 이름 : " + principal.getName());
 
         UserDTO loginUser = userService.read(principal.getName());
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         if ( loginUser.getRole().name() == "ADMIN" ){
 

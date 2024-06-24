@@ -31,16 +31,23 @@ public class ProductController {
     private final UserService userService;
     private final CategoryService categoryService;
 
+    //상품 목록
     @GetMapping("/list")
-    public void productList(){
+    public void productList(Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
+        model.addAttribute("productDTOList", productService.list());
 
     }
 
     @GetMapping("/read")
-    public void productRead(){
-
+    public void productRead(Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
+    //상품 등록 진입
     @GetMapping("/register")
     public String productRegister(Principal principal,
                                 ProductDTO productDTO,
@@ -91,8 +98,9 @@ public class ProductController {
     }
 
     @PostMapping("/modify")
-    public void productModify(){
-
+    public void productModify(Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
     @PostMapping("/modifypost")

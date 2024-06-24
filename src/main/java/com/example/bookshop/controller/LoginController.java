@@ -1,7 +1,9 @@
 package com.example.bookshop.controller;
 
+import com.example.bookshop.dto.CategoryDTO;
 import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.entity.UserMember;
+import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -12,6 +14,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequiredArgsConstructor
 @Log4j2
@@ -20,9 +24,14 @@ public class LoginController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final CategoryService categoryService;
 
     @GetMapping("")
-    public String loginGet(){
+    public String loginGet(Model model){
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         return "/login";
     }
 
@@ -30,13 +39,17 @@ public class LoginController {
     public String loginError(Model model,
                              RedirectAttributes redirectAttributes){
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         redirectAttributes.addFlashAttribute("loginErrorMsg", "아이디 또는 비밀번호를 확인해주세요" );
         return "redirect:/login";
     }
 
     @GetMapping("/findID")
-    public void findIDGet(){
-
+    public void findIDGet(Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
     @PostMapping("/findID")
@@ -62,8 +75,9 @@ public class LoginController {
     }
 
     @GetMapping("/findPW")
-    public void findPWGet(){
-
+    public void findPWGet(Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
     @ResponseBody

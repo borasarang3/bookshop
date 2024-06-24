@@ -1,8 +1,10 @@
 package com.example.bookshop.controller;
 
 import com.example.bookshop.constant.Role;
+import com.example.bookshop.dto.CategoryDTO;
 import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.entity.UserMember;
+import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
 
 @Controller
 @Log4j2
@@ -30,6 +33,7 @@ public class UserController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final CategoryService categoryService;
 
     //회원가입 페이지
     @GetMapping("/register")
@@ -39,6 +43,9 @@ public class UserController {
         userDTO.setRole(Role.USER);
 
         model.addAttribute("userDTO", userDTO);
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         return "/user/register";
     }
@@ -51,6 +58,9 @@ public class UserController {
         userDTO.setRole(Role.ADMIN);
 
         model.addAttribute("userDTO", userDTO);
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         return "/user/register";
     }
@@ -104,6 +114,9 @@ public class UserController {
 
         UserDTO loginUser = userService.read(principal.getName());
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         //기본
         // 로그인한 사람의 이름으로 정보를 찾아옴
 
@@ -133,6 +146,9 @@ public class UserController {
 
         UserDTO loginUser = userService.read(principal.getName());
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         if ( loginUser.getRole().name() == "ADMIN" ){
             return "/user/findUser";
         } else {
@@ -154,6 +170,9 @@ public class UserController {
         log.info("현재 로그인 회원 이름 : " + principal.getName());
 
         UserDTO loginUser = userService.read(principal.getName());
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         //해야 하는 것
         // 회원 목록에서 아이디를 눌렀을 때 아이디로 정보를 찾아옴
@@ -189,6 +208,9 @@ public class UserController {
         //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 수정 가능
 
         model.addAttribute("dto", userService.read(principal.getName()));
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         return "/user/modify";
 
@@ -269,6 +291,9 @@ public class UserController {
 
         UserDTO loginUser = userService.read(principal.getName());
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         if ( loginUser.getRole().name() == "ADMIN" ){
 
             model.addAttribute("userDTOList",  userService.allUserList() );
@@ -287,20 +312,29 @@ public class UserController {
 
     //구매 이력 확인
     @GetMapping("/buy")
-    public void userBuy() {
+    public void userBuy(Model model) {
         //post 접근 불가로 get 변경해둠
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
     //등록한 상품 확인
     @GetMapping("/product")
-    public void userProduct() {
+    public void userProduct(Model model) {
         //post 접근 불가로 get 변경해둠
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
     //작성한 리뷰 확인
     @GetMapping("/review")
-    public void userReview() {
+    public void userReview(Model model) {
         //post 접근 불가로 get 변경해둠
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
     }
 
 

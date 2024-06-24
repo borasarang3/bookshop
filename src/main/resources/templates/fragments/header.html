@@ -26,9 +26,11 @@
                                 카테고리
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">건강/취미</a></li>
-                                <li><a class="dropdown-item" href="#">경제경영</a></li>
-
+                                <li th:each="category: ${categoryList}">
+                                    <a class="dropdown-item" href="#">
+                                        [[${category.cname}]]
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
