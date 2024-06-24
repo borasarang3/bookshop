@@ -1,11 +1,13 @@
 package com.example.bookshop.entity;
 
 import com.example.bookshop.constant.ItemSellStatus;
+import com.example.bookshop.dto.ProductDTO;
 import com.example.bookshop.entity.base.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.modelmapper.ModelMapper;
 
 @Entity
 @Getter
@@ -49,7 +51,11 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //상품 판매 상태
 
+    private static ModelMapper modelMapper;
 
+    public static Product of(ProductDTO productDTO) {
+        return modelMapper.map(productDTO, Product.class);
+    }
 
 
 

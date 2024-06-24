@@ -2,19 +2,22 @@ package com.example.bookshop.dto;
 
 import com.example.bookshop.constant.ItemSellStatus;
 import com.example.bookshop.entity.Category;
+import com.example.bookshop.entity.Product;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
+import org.modelmapper.ModelMapper;
 
 @Getter
 @Setter
 @ToString
 public class ProductDTO {
 
-    @NotBlank
     private Long pno; //상품 넘버
 
     @NotBlank(message = "판매자 이름을 적어주세요." )
@@ -34,18 +37,23 @@ public class ProductDTO {
     @NotBlank(message = "상품 설명을 적어주세요.")
     private String productContent; //상품 설명
 
-    @NotBlank(message = "상품 가격을 적어주세요.")
+    @NotNull(message = "상품 가격을 적어주세요.")
     private Long productPrice; //상품 가격
 
-    @NotBlank(message = "상품 재고를 적어주세요.")
+    @NotNull(message = "상품 재고를 적어주세요.")
     private Long productAmount; //상품 수량
 
-    @NotBlank(message = "카테고리를 설정해주세요.")
-    private Category category; //카테고리
+    @NotNull(message = "카테고리를 설정해주세요.")
+    private Long cno; //카테고리
 
-    @NotBlank
+    @NotNull
     private ItemSellStatus itemSellStatus; //상품 판매 상태
 
+    private static ModelMapper modelMapper;
+
+    public static ProductDTO of(Product product) {
+        return modelMapper.map(product, ProductDTO.class);
+    }
 
 
 }

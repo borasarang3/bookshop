@@ -17,18 +17,17 @@
             <div class="input-group mb-1">
                 <!--판매자 이름은 현재 로그인한 사람의 이름이 자동으로 들어오도록.-->
                 <span class="input-group-text" id="seller">판매자</span>
-                <input type="text" name="seller" class="form-control seller" placeholder="판매자 이름" required>
+                <input type="text" name="seller" th:value="${productDTO.seller}" class="form-control seller" placeholder="판매자 이름" required>
             </div>
         </div>
         <div class="col-md-6">
             <div class="input-group mb-1">
                 <label class="input-group-text" for="inputGroupSelect01">카테고리</label>
-                <select class="form-select" id="inputGroupSelect01">
+                <select  class="form-select" id="inputGroupSelect01">
                     <option selected>카테고리를 선택해주세요.</option>
-                    <!--현재 데이터베이스에 있는 카테고리를 each로 가져오기-->
-                    <option value="1">One</option>
-                    <option value="2">Two</option>
-                    <option value="3">Three</option>
+                    <option th:each="category: ${categoryList}"
+                    th:value="${category.cno}">[[${category.cname}]]</option>
+                    <input type="text" class="category" name="cno">
                 </select>
             </div>
         </div>
@@ -78,15 +77,40 @@
 <!--        </div>-->
 
         <!--값이 들어오는 걸 확인하면 hidden으로 바꿔둘 것-->
-        <input type="text" name="itemSellStatus" placeholder="상품 판매 상태를 설정해주세요.">
+        <input type="text" name="itemSellStatus" th:value="${productDTO.itemSellStatus.name}" placeholder="상품 판매 상태를 설정해주세요.">
 
         <div class="d-grid gap-2 col-6 mx-auto">
-            <button type="submit" class="btn btn-primary">상품 등록</button>
+            <button type="submit" class="btn btn-primary subBtn">상품 등록</button>
         </div>
 
     </form>
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function (){
+        const result = [[${result}]]
+
+        if (result){
+            alert(result)
+        }
+
+        //////////////////
+
+        let inputCategory = $(".category");
+        inputCategory.empty();
+
+        $(".subBtn").on("click", function (){
+            let keyword = $("select option:selected").val();
+            console.log(keyword);
+            inputCategory.val(keyword);
+        });
+    })
+
+
+</script>
+
 
 </body>
 </html>
