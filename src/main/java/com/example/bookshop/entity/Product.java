@@ -43,7 +43,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long productAmount; //상품 수량
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cno", nullable = false)
     private Category category; //카테고리
 
@@ -51,10 +51,14 @@ public class Product extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ItemSellStatus itemSellStatus; //상품 판매 상태
 
-    private static ModelMapper modelMapper;
+    private static ModelMapper modelMapper = new ModelMapper();
 
     public static Product of(ProductDTO productDTO) {
+
+
         return modelMapper.map(productDTO, Product.class);
+
+
     }
 
 

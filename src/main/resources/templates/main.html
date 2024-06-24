@@ -17,11 +17,14 @@
 
 <script layout:fragment="script" th:inline="javascript">
 
-    const result = [[${result}]]
+    $(document).ready(function () {
+        const result = [[${result}]]
 
-    if (result){
-        alert(result)
-    }
+        if (result){
+            alert(result)
+        }
+    })
+
 
 
 

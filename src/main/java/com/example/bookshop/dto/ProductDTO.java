@@ -44,12 +44,12 @@ public class ProductDTO {
     private Long productAmount; //상품 수량
 
     @NotNull(message = "카테고리를 설정해주세요.")
-    private Long cno; //카테고리
+    private Long category; //카테고리
 
     @NotNull
     private ItemSellStatus itemSellStatus; //상품 판매 상태
 
-    private static ModelMapper modelMapper;
+    private static ModelMapper modelMapper = new ModelMapper();
 
     public static ProductDTO of(Product product) {
         return modelMapper.map(product, ProductDTO.class);

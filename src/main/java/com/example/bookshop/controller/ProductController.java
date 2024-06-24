@@ -42,10 +42,17 @@ public class ProductController {
     }
 
     @GetMapping("/register")
-    public void productRegister(Principal principal,
+    public String productRegister(Principal principal,
                                 ProductDTO productDTO,
+                                RedirectAttributes redirectAttributes,
                                 Model model){
         //post 접근 불가로 get 변경해둠
+
+        if (principal.getName() == null){
+            log.info("로그인시 이용가능한 서비스입니다.");
+            redirectAttributes.addFlashAttribute("result", "로그인시 이용가능한 서비스입니다.");
+            return "redirect:/login";
+        }
 
         UserDTO userDTO = userService.read(principal.getName());
 
@@ -57,6 +64,7 @@ public class ProductController {
         model.addAttribute("productDTO", productDTO);
         model.addAttribute("categoryList", categoryDTOList);
 
+        return "/product/register";
     }
     //상품 등록
     @PostMapping("/register")
@@ -72,14 +80,14 @@ public class ProductController {
         if (bindingResult.hasErrors()) {
             log.info("상품 등록 에러 발생 : " + productDTO);
             redirectAttributes.addFlashAttribute("result", bindingResult.hasErrors());
-            return "/product/register";
+            return "redirect:/product/register";
         }
 
         productService.register(productDTO);
 
         redirectAttributes.addFlashAttribute("result", "상품 등록이 완료되었습니다.");
 
-        return "/main";
+        return "redirect:/main";
     }
 
     @PostMapping("/modify")

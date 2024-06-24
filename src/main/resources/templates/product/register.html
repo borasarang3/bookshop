@@ -27,7 +27,7 @@
                     <option selected>카테고리를 선택해주세요.</option>
                     <option th:each="category: ${categoryList}"
                     th:value="${category.cno}">[[${category.cname}]]</option>
-                    <input type="text" class="category" name="cno">
+                    <input type="text" class="category" name="category">
                 </select>
             </div>
         </div>
