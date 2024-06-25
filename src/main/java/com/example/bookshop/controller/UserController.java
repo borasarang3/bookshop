@@ -2,9 +2,11 @@ package com.example.bookshop.controller;
 
 import com.example.bookshop.constant.Role;
 import com.example.bookshop.dto.CategoryDTO;
+import com.example.bookshop.dto.ProductDTO;
 import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.service.CategoryService;
+import com.example.bookshop.service.ProductService;
 import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class UserController {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
     private final CategoryService categoryService;
+    private final ProductService productService;
 
     //회원가입 페이지
     @GetMapping("/register")
@@ -321,11 +324,23 @@ public class UserController {
 
     //등록한 상품 확인
     @GetMapping("/product")
-    public void userProduct(Model model) {
+    public void userProduct(Principal principal, Model model) {
         //post 접근 불가로 get 변경해둠
-
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+
+        UserDTO loginUser = userService.read(principal.getName());
+
+        model.addAttribute("loginUser", loginUser);
+
+        List<ProductDTO> productDTOList = productService.userProduct(loginUser.getUserName());
+
+        log.info(productDTOList);
+
+        model.addAttribute("productDTOList", productDTOList);
+
     }
 
     //작성한 리뷰 확인

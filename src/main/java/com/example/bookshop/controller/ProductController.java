@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -41,10 +42,19 @@ public class ProductController {
 
     }
 
-    @GetMapping("/read")
-    public void productRead(Model model){
+    @GetMapping({"/read","/read/{pno}"})
+    public String productRead(@PathVariable("pno") Long pno, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        ProductDTO productDTO = productService.productRead(pno);
+        log.info(productDTO);
+        model.addAttribute("productDTO", productDTO);
+
+        return "/product/read";
+
+
+
     }
 
     //상품 등록 진입

@@ -39,24 +39,27 @@
     </div>
 
     <!-- 상품칸 -->
-    <div class="card mb-4 mx-auto p-2" style="max-width: 540px;">
+        <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
             <div class="row g-0" th:each="dto: ${productDTOList}">
+                <input class="pno" type="text" th:value="${dto.pno}" readonly>
                 <div class="col-md-4">
                     <!--이미지 넣는 구역-->
-                    <img src="..." class="img-fluid rounded-start" alt="...">
+                    <a class="productImg" href="#">
+                        <img src="..." class="img-fluid rounded-start" alt="...">
+                    </a>
                 </div>
                 <div class="col-md-8">
                     <div class="card-body">
                         <h5><span th:if="${dto.itemSellStatus.name() == 'SELL'}" class="badge text-bg-primary">판매중</span></h5>
                         <h5><span th:if="${dto.itemSellStatus.name() == 'SOLD_OUT'}" class="badge text-bg-secondary">품절</span></h5>
 
-                        <h5 class="card-title fw-bold" th:text="${dto.productName}">도서명</h5>
+                        <a class="h5 card-title fw-bold productName" th:text="${dto.productName}" th:href="@{'/product/read/' + ${dto.pno}}" style="text-decoration: none">도서명</a>
                         <p class="card-text">
-                            글쓴이 [[${dto.writer}]] | 출판사 [[${dto.publish}]] | 상품 등록일  <br>
-                            가격 [[${dto.productPrice}]] | 판매자명 [[${dto.seller}]] </p>
-                        <p class="card-text"></p>
-                        <button type="button" class="btn btn-outline-primary">장바구니</button>
-                        <button type="button" class="btn btn-primary">바로구매</button>
+                            [[${dto.writer}]] | [[${dto.publish}]] | [[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]] <br>
+                            [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
+
+                        <button type="button" class="btn btn-outline-primary fw-bold">장바구니</button>
+                        <button type="button" class="btn btn-primary fw-bold">바로구매</button>
                     </div>
                 </div>
             </div>
@@ -87,6 +90,37 @@
 
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function () {
+
+        let productImg = $(".productImg");
+        let productName = $(".productName");
+
+
+
+        productImg.on("click", function (e) {
+            // alert("실행")
+            e.preventDefault();
+            e.stopPropagation();
+
+            let card = $(this).closest(".card");
+            let pnoInput = card.find(".pno");
+
+            console.log(pnoInput.val());
+        })
+
+
+
+
+
+
+
+    })
+
+</script>
+
 
 </body>
 </html>

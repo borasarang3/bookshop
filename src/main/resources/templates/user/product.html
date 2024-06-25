@@ -10,7 +10,42 @@
 
 <div layout:fragment="content">
 
-    <h1>등록한 상품 확인</h1>
+    <div class="h1 fw-bold text-center">
+        <div th:if="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 회원님의 등록한 상품</div>
+        <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 등록한 상품</div>
+    </div>
+
+    <div class="h3 text-center mt-5" th:if="${#lists.size(productDTOList) == 0}">등록한 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.size(productDTOList) == 0}">
+        <table class="table table-bordered text-center" th:if="${productDTOList}">
+            <thead>
+            <tr class="table-dark">
+                <th scope="col">상품등록일</th>
+                <th scope="col">상품 이름</th>
+                <th scope="col">글쓴이</th>
+                <th scope="col">출판사</th>
+                <th scope="col">가격</th>
+                <th scope="col">리뷰 개수</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr role="row" th:each="dto: ${productDTOList}">
+
+                <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
+                <th scope="row" class="readBtn" >
+                    <a class="link-dark "  href="#" style="text-decoration: none">
+                        [[${dto.productName}]]
+                    </a>
+                </th>
+                <th scope="row">[[${dto.writer}]]</th>
+                <th scope="row">[[${dto.publish}]]</th>
+                <th scope="row">[[${dto.productPrice}]]</th>
+                <th scope="row">0</th>
+            </tr>
+            </tbody>
+        </table>
+    </th:block>
+
 
 
 </div>

@@ -26,6 +26,7 @@
                                 카테고리
                             </a>
                             <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/product/list">전체</a></li>
                                 <li th:each="category: ${categoryList}">
                                     <a class="dropdown-item" href="#">
                                         [[${category.cname}]]
@@ -34,7 +35,7 @@
                             </ul>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link active" aria-current="page" href="/product/register">상품 등록</a>
+                            <a class="nav-link active" aria-current="page" href="/product/register" sec:authorize="isAuthenticated()">상품 등록</a>
                         </li>
                     </ul>
                     <ul class="navbar-nav">

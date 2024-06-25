@@ -10,9 +10,141 @@
 
 <div layout:fragment="content">
 
-    <h1>상품 상세 정보</h1>
+    <div th:object="${productDTO}">
+        <h5 class="fw-bold">[[${productDTO.productName}]]</h5>
+        <p class="card-text mb-4">
+            [[${productDTO.writer}]] | [[${productDTO.publish}]] | [[${#temporals.format(productDTO.regidate, 'yyyy-MM-dd')}]] | [[${productDTO.seller}]] </p>
+
+        <div class="card mb-4" style="border: none">
+            <div class="row g-0">
+                <div class="col-md-4">
+                    <!--이미지 넣는 구역-->
+                    <a href="#">
+                        <img src="..." class="img-fluid rounded-start" alt="...">
+                    </a>
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <h5><span th:if="${productDTO.itemSellStatus.name() == 'SELL'}" class="badge text-bg-primary">판매중</span></h5>
+                        <h5><span th:if="${productDTO.itemSellStatus.name() == 'SOLD_OUT'}" class="badge text-bg-secondary">품절</span></h5>
+
+                        <div>
+                            <div class="mb-1 row">
+                                <label for="price" class="col-sm-2 col-form-label">가격</label>
+                                <div class="col-sm-10">
+                                    <input type="hidden" name="productPrice" readonly class="form-control-plaintext price" th:value="${productDTO.productPrice}">
+                                    <input type="text" name="productPrice" readonly class="form-control-plaintext" id="price" th:value="${productDTO.productPrice}+'원'">
+                                </div>
+                            </div>
+
+                            <div class="mb-1 row">
+                                <label for="count" class="col-sm-2 col-form-label">수량</label>
+                                <div class="col-5 ">
+                                    <input type="number" name="productAmount" id="count" value="1" min="1"
+                                           style="width: 80px" class="form-control count">
+                                </div>
+                            </div>
+
+                            <div class="mb-3 row">
+                                <label for="orderPrice" class="col-sm-2 col-form-label">결제금액</label>
+                                <div class="col-sm-10">
+                                    <input type="text" name="orderPrice" readonly class="form-control-plaintext orderPrice" id="orderPrice">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:if="${productDTO.itemSellStatus.name() == 'SELL'}">
+                            <div th:if="${productDTO.productAmount > 0}">
+                                <button type="button" class="btn btn-outline-primary fw-bold">장바구니</button>
+                                <button type="button" class="btn btn-primary fw-bold">바로구매</button>
+                            </div>
+
+                            <div th:if="${productDTO.productAmount == 0}">
+                                <h1>품절</h1>
+                            </div>
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr class="mb-4">
+
+        <h5 class="fw-bold">도서 설명</h5>
+        <p class="mb-5">[[${productDTO.productContent}]]</p>
+
+    </div>
+
+    <hr class="mb-4">
+
+    <h5 class="mb-3">구매 리뷰
+        <button type="button" class="btn btn-primary btn-sm mx-3">리뷰 작성</button>
+    </h5>
+
+
+    <div class="card mb-4">
+        <div class="row g-0 ms-3">
+            <h5 class="fw-bold mt-3">리뷰 제목</h5>
+            <p class="card-text mb-3">
+                작성자 | 리뷰 작성일 | 리뷰 수정일 </p>
+
+            <div class="col-md-4">
+                <!--이미지 넣는 구역-->
+                <a href="#">
+                    <img src="..." class="img-fluid rounded-start" alt="...">
+                </a>
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+
+                    <p>리뷰 내용이 들어가는 칸입니다.</p>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold">리뷰 삭제</button>
+                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold">리뷰 수정</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function () {
+
+        let orderPrice = $(".orderPrice");
+
+        total();
+
+        function total(){
+            let price = $(".price").val();
+            console.log("가격 : " + price);
+
+            let count = $("#count").val();
+            console.log("수량 : " + count);
+
+            orderPrice.val(price * count +"원");
+
+        }
+
+        $("#count").on("change", function () {
+            total()
+        });
+
+
+
+
+
+    })
+
+
+</script>
 
 </body>
 </html>

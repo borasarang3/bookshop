@@ -13,6 +13,8 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @ToString
@@ -48,6 +50,8 @@ public class ProductDTO {
 
     @NotNull
     private ItemSellStatus itemSellStatus; //상품 판매 상태
+
+    private LocalDateTime regidate; //상품 등록일
 
     private static ModelMapper modelMapper = new ModelMapper();
 

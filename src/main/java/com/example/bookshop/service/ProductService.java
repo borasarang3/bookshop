@@ -48,20 +48,47 @@ public class ProductService {
     public List<ProductDTO> list(){
         List<Product> productList = productRepository.findAll();
 
+        productList.forEach(product -> log.info(product));
 
-//        for (Product product : productList){
-//            product.setPno(productList.getpno);
-//            product.setProductName();
-//            product.setProductAmount();
-//            product.setProductContent();
-//            product.setProductPrice();
-//            product.setCategory();
-//            product.setSeller();
-//            product.setWriter();
-//            product.setPublish();
-//            product.setItemSellStatus();
-//        }
+        List<ProductDTO> productDTOList = productList.stream()
+                .map(product -> modelMapper.map(product, ProductDTO.class))
+                .collect(Collectors.toList());
 
+        for(Product product : productList){
+            for(ProductDTO productDTO : productDTOList){
+                if(product.getPno() == productDTO.getPno()){
+                    productDTO.setCategoryid(product.getCategory().getCno());
+                }
+            }
+        }
+
+        //dto에 넣는 건 category가 아니라 categoryId(Long 타입)
+        //엔티티의 pno와 dto의 pno가 같을 때,
+        //엔티티의 category Cno(id)를 dto에 set
+
+        productDTOList.forEach(productDTO -> log.info(productDTO));
+
+        return productDTOList;
+    }
+
+    //상품 상세보기
+    public ProductDTO productRead(Long pno) {
+
+        Product product = productRepository.findById(pno)
+                .orElseThrow(EntityNotFoundException::new);
+
+        ProductDTO productDTO = ProductDTO.of(product);
+
+        return productDTO;
+
+    }
+
+    //판매자 이름으로 등록한 상품 목록 찾기
+    public List<ProductDTO> userProduct(String UserName){
+
+        List<Product> productList = productRepository.findBySeller(UserName);
+
+        log.info(productList);
 
         productList.forEach(product -> log.info(product));
 
@@ -80,7 +107,11 @@ public class ProductService {
         productDTOList.forEach(productDTO -> log.info(productDTO));
 
         return productDTOList;
+
     }
+
+
+
 
 
 }
