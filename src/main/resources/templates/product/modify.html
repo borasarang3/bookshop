@@ -10,7 +10,141 @@
 
 <div layout:fragment="content">
 
-    <h1>상품 정보 수정</h1>
+    <h1 class="text-center fw-bold mb-4">상품 정보 수정</h1>
+
+    <form class="row g-3" action="/product/modifypost" method="post">
+
+        <input type="text" th:value="${productDTO.pno}" name="pno" readonly>
+
+        <div class="col-md-6">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="seller">판매자</span>
+                <input type="text" name="seller" th:value="${productDTO.seller}" class="form-control seller" placeholder="판매자 이름" readonly>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group mb-1">
+                <label class="input-group-text" for="inputGroupSelect01">카테고리</label>
+                <select  class="form-select" id="inputGroupSelect01">
+                    <option selected>카테고리를 선택해주세요.</option>
+                    <option th:each="category: ${categoryList}"
+                            th:attr="selected=${category.cno == productDTO.categoryid}"
+                            th:value="${category.cno}">[[${category.cname}]]</option>
+                    <input type="text" class="category" name="categoryid">
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="productName">도서명</span>
+                <input type="text" th:value="${productDTO.productName}" name="productName" class="form-control productName" placeholder="도서명을 입력해주세요." required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="writer">글쓴이</span>
+                <input type="text" th:value="${productDTO.writer}" name="writer" class="form-control writer" placeholder="글쓴이를 입력해주세요." required>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="publish">출판사</span>
+                <input type="text" th:value="${productDTO.publish}" name="publish" class="form-control publish" placeholder="출판사를 입력해주세요." required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="productPrice">가격</span>
+                <input type="text" th:value="${productDTO.productPrice}" name="productPrice" class="form-control productPrice" placeholder="판매할 가격을 입력해주세요." required>
+            </div>
+        </div>
+        <div class="col-6">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="productAmount">재고</span>
+                <input type="text" th:value="${productDTO.productAmount}" name="productAmount" class="form-control" placeholder="판매할 상품의 수량을 입력해주세요." required>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group mb-1">
+                <label class="input-group-text" for="inputGroupSelect02">상품 판매 상태</label>
+                <select class="form-select" id="inputGroupSelect02">
+                    <option class="status" th:attr="selected=${productDTO.itemSellStatus == 'SELL'}" th:value="SELL">판매중</option>
+                    <option class="status" th:attr="selected=${productDTO.itemSellStatus == 'SOLD_OUT'}" th:value="SOLD_OUT">품절</option>
+                    <input type="text" class="itemSellStatus" name="itemSellStatus">
+                </select>
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="input-group mb-1">
+                <span class="input-group-text" id="productContent">도서 설명</span>
+                <textarea th:text="${productDTO.productContent}" name="productContent" class="form-control productContent" rows="3" placeholder="도서의 상세 설명을 입력해주세요." required></textarea>
+            </div>
+        </div>
+
+        <!--기본적인 등록 기능 구현 후에 이미지 기능 추가-->
+        <!--이미지도 필수 요소-->
+        <div class="col-12">
+            <div class="input-group mb-1">
+                <input type="file" name="imgFile" class="form-control" placeholder="이미지 파일을 등록해주세요." required>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 d-flex justify-content-sm-center">
+            <button type="button" style="width: 300px" class="btn btn-primary btn-lg removeBtn">상품 삭제</button>
+            <button type="submit" style="width: 300px" class="btn btn-primary btn-lg subBtn">상품 정보 수정</button>
+        </div>
+
+    </form>
+
+</div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function (){
+        const result = [[${result}]]
+
+        if (result){
+            alert(result)
+        }
+
+        //////////////////
+
+        let inputCategory = $(".category");
+        // inputCategory.empty();
+
+        //카테고리 값을 보내기
+        $(".subBtn").on("click", function (){
+            let keyword = $("#inputGroupSelect01 option:selected").val();
+            console.log(keyword);
+            inputCategory.val(keyword);
+        });
+
+        let inputItemSellStatus = $(".itemSellStatus");
+
+        //상품 판매 상태 값 보내기
+        $(".subBtn").on("click", function () {
+            let status = $("#inputGroupSelect02 option:selected").val();
+            console.log(status);
+            inputItemSellStatus.val(status);
+        })
+
+        let removeBtn = $(".removeBtn"); // 탈퇴 버튼
+        const formBs = document.querySelector("form");
+
+        removeBtn.on("click", function () {
+            formBs.action = `/product/remove`;
+            formBs.method = "post";
+            formBs.submit();
+        });
+
+
+
+
+    })
+
+
+</script>
+
 
 </div>
 

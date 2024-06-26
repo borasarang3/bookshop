@@ -96,19 +96,19 @@
     $(document).ready(function () {
 
         let productImg = $(".productImg");
-        let productName = $(".productName");
 
-
-
+        //이미지 클릭시 상품 상세보기 진행
         productImg.on("click", function (e) {
             // alert("실행")
             e.preventDefault();
             e.stopPropagation();
 
-            let card = $(this).closest(".card");
-            let pnoInput = card.find(".pno");
+            let row = $(this).closest(".row");
+            let pnoInput = row.find(".pno");
 
             console.log(pnoInput.val());
+
+            location.href = '/product/read/' + pnoInput.val();
         })
 
 

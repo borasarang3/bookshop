@@ -33,13 +33,12 @@
 
                 <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
                 <th scope="row" class="readBtn" >
-                    <a class="link-dark "  href="#" style="text-decoration: none">
-                        [[${dto.productName}]]
-                    </a>
+                    <a class="link-dark " th:text="${dto.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
                 </th>
                 <th scope="row">[[${dto.writer}]]</th>
                 <th scope="row">[[${dto.publish}]]</th>
                 <th scope="row">[[${dto.productPrice}]]</th>
+                <!--리뷰 구현 후 리뷰 개수 반영하기-->
                 <th scope="row">0</th>
             </tr>
             </tbody>
@@ -49,6 +48,20 @@
 
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function (){
+        const result = [[${result}]]
+
+        if (result){
+            alert(result)
+        }
+    })
+
+
+</script>
+
 
 </body>
 </html>

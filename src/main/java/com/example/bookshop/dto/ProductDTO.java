@@ -14,6 +14,8 @@ import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -52,6 +54,13 @@ public class ProductDTO {
     private ItemSellStatus itemSellStatus; //상품 판매 상태
 
     private LocalDateTime regidate; //상품 등록일
+
+
+    //이미지 파일
+    public List<ImageDTO> imageDTOList = new ArrayList<>();
+    //이미 저장되어서 수정할 때 불러온 사진들의 아이디 삭제할 이미지들
+    private List<Long> inos = new ArrayList<>();
+
 
     private static ModelMapper modelMapper = new ModelMapper();
 

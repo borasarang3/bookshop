@@ -5,6 +5,7 @@ import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.entity.Category;
 import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.repository.CategoryRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,7 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
     private final ModelMapper modelMapper;
 
+    //전체 카테고리 갖고 오기
     public List<CategoryDTO> allCategoryList(){
 
         List<Category> categoryList = categoryRepository.findAll();
@@ -38,6 +40,19 @@ public class CategoryService {
 
 
     }
+
+    //아이디로 카테고리 갖고 오기
+    public CategoryDTO findCategoryId(Long cno){
+
+        Category category = categoryRepository.findById(cno)
+                .orElseThrow(EntityNotFoundException::new);
+
+        CategoryDTO categoryDTO = CategoryDTO.of(category);
+
+        return categoryDTO;
+
+    }
+
 
     //카테고리 등록
     public CategoryDTO register (String cname){

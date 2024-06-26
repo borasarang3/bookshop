@@ -43,7 +43,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Long productAmount; //상품 수량
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cno", nullable = false)
     private Category category; //카테고리
 

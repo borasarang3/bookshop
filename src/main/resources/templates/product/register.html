@@ -12,10 +12,9 @@
 
     <h1 class="text-center fw-bold mb-4">상품 등록</h1>
 
-    <form class="row g-3" action="/product/register" method="post">
+    <form class="row g-3" action="/product/register" enctype="multipart/form-data" method="post">
         <div class="col-md-6">
             <div class="input-group mb-1">
-                <!--판매자 이름은 현재 로그인한 사람의 이름이 자동으로 들어오도록.-->
                 <span class="input-group-text" id="seller">판매자</span>
                 <input type="text" name="seller" th:value="${productDTO.seller}" class="form-control seller" placeholder="판매자 이름" required>
             </div>
@@ -70,14 +69,14 @@
 
         <!--기본적인 등록 기능 구현 후에 이미지 기능 추가-->
         <!--이미지도 필수 요소-->
-<!--        <div class="col-12">-->
-<!--            <div class="input-group mb-1">-->
-<!--                <input type="file" class="form-control" placeholder="대표 이미지 파일을 등록해주세요." required>-->
-<!--            </div>-->
-<!--        </div>-->
+        <div class="col-12">
+            <div class="input-group mb-1">
+                <input type="file" name="imgFile" class="form-control" placeholder="이미지 파일을 등록해주세요." required>
+            </div>
+        </div>
 
-        <!--값이 들어오는 걸 확인하면 hidden으로 바꿔둘 것-->
-        <input type="text" name="itemSellStatus" th:value="${productDTO.itemSellStatus.name}" placeholder="상품 판매 상태를 설정해주세요.">
+        <!--상품 판매 상태 기본: 판매중-->
+        <input type="hidden" name="itemSellStatus" th:value="${productDTO.itemSellStatus.name}" placeholder="상품 판매 상태를 설정해주세요.">
 
         <div class="d-grid gap-2 col-6 mx-auto">
             <button type="submit" class="btn btn-primary subBtn">상품 등록</button>
@@ -101,6 +100,7 @@
         let inputCategory = $(".category");
         inputCategory.empty();
 
+        //카테고리 값을 보내기
         $(".subBtn").on("click", function (){
             let keyword = $("select option:selected").val();
             console.log(keyword);
