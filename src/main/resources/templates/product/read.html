@@ -19,12 +19,11 @@
             <div class="row g-0">
                 <div class="col-md-4">
                     <!--이미지 넣는 구역-->
-                    <a href="#">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
-                    </a>
+                    <img th:src="${productDTO.imageDTOList[0].imgUrl}" style="width: 300px; height: 300px;" class="img-fluid mx-5" alt="${dto.productName}">
+
                 </div>
                 <div class="col-md-8">
-                    <div class="card-body">
+                    <div class="card-body mx-5 mt-3">
                         <h5><span th:if="${productDTO.itemSellStatus.name() == 'SELL'}" class="badge text-bg-primary">판매중</span></h5>
                         <h5><span th:if="${productDTO.itemSellStatus.name() == 'SOLD_OUT'}" class="badge text-bg-secondary">품절</span></h5>
 

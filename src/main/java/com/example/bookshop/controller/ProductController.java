@@ -1,10 +1,8 @@
 package com.example.bookshop.controller;
 
 import com.example.bookshop.constant.ItemSellStatus;
-import com.example.bookshop.dto.CategoryDTO;
-import com.example.bookshop.dto.ImageDTO;
-import com.example.bookshop.dto.ProductDTO;
-import com.example.bookshop.dto.UserDTO;
+import com.example.bookshop.dto.*;
+import com.example.bookshop.entity.Product;
 import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.ImageService;
 import com.example.bookshop.service.ProductService;
@@ -12,6 +10,9 @@ import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -36,13 +38,27 @@ public class ProductController {
     private final ImageService imageService;
 
     //상품 목록
-    @GetMapping("/list")
-    public void productList(Model model){
+    @GetMapping({"/list", "/list/{page}"})
+    public String productList(ProductSearchDTO productSearchDTO,
+                            @PathVariable("page")Optional<Integer> page,
+                            Model model){
+
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
-        model.addAttribute("productDTOList", productService.list());
+        // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 1번부터 3개
+        // 테스트하고 10개로 만들어두기
+        Pageable pageable =
+                PageRequest.of(page.isPresent() ? page.get() : 0, 3);
 
+        Page<Product> products = productService.getProductPage(productSearchDTO, pageable);
+
+        model.addAttribute("products", products);
+        model.addAttribute("productSearchDTO", productSearchDTO);
+        model.addAttribute("productDTOList", productService.list());
+        model.addAttribute("maxPage", 5);
+
+        return "/product/list";
     }
 
     @GetMapping("/read/{pno}")
@@ -116,6 +132,7 @@ public class ProductController {
         log.info("getBytes : " + Arrays.toString(imageFileList.get(0).getBytes()));
         log.info("getContentType : " + imageFileList.get(0).getContentType());
         log.info("getOriginalFilename : " + imageFileList.get(0).getOriginalFilename());
+
         log.info("정상 값 : " + productDTO);
 
 
@@ -143,7 +160,9 @@ public class ProductController {
     public String productModifyPost(@Valid ProductDTO productDTO,
                                     BindingResult bindingResult,
                                     RedirectAttributes redirectAttributes,
-                                    Model model){
+                                    Model model,
+                                    @RequestParam("imgFile")List<MultipartFile> imageFileList)
+            throws Exception {
 
         log.info("입력받은 productDTO : " + productDTO);
 
@@ -155,7 +174,17 @@ public class ProductController {
             return "redirect:/product/modify/" + productDTO.getPno();
         }
 
-        productService.productModify(productDTO);
+        if (imageFileList.get(0).isEmpty() && productDTO.getPno() == null){
+            redirectAttributes.addFlashAttribute("result", "이미지를 업로드 해주세요.");
+            return "redirect:/product/register";
+        }
+
+        log.info("getBytes : " + Arrays.toString(imageFileList.get(0).getBytes()));
+        log.info("getContentType : " + imageFileList.get(0).getContentType());
+        log.info("getOriginalFilename : " + imageFileList.get(0).getOriginalFilename());
+        log.info("정상 값 : " + productDTO);
+
+        productService.productModify(productDTO, imageFileList);
 
         redirectAttributes.addFlashAttribute("result", "상품 정보가 수정되었습니다.");
 

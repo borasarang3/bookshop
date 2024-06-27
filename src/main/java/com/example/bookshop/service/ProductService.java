@@ -3,6 +3,7 @@ package com.example.bookshop.service;
 import com.example.bookshop.dto.CategoryDTO;
 import com.example.bookshop.dto.ImageDTO;
 import com.example.bookshop.dto.ProductDTO;
+import com.example.bookshop.dto.ProductSearchDTO;
 import com.example.bookshop.entity.Category;
 import com.example.bookshop.entity.Image;
 import com.example.bookshop.entity.Product;
@@ -13,11 +14,14 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -71,6 +75,14 @@ public class ProductService {
 
     }
 
+    //검색+페이징처리
+    @Transactional(readOnly = true)
+    public Page<Product> getProductPage (ProductSearchDTO productSearchDTO,
+                                         Pageable pageable) {
+        return productRepository.getProductPage(productSearchDTO, pageable);
+    }
+
+    //전체 상품 목록
     public List<ProductDTO> list(){
         List<Product> productList = productRepository.findAll();
 
@@ -84,6 +96,37 @@ public class ProductService {
             for(ProductDTO productDTO : productDTOList){
                 if(product.getPno() == productDTO.getPno()){
                     productDTO.setCategoryid(product.getCategory().getCno());
+
+                    //product와 productDTO의 pno가 같을 때 이미지를 찾아서
+                    //DTO에 set
+                    List<Image> imageList = imageRepository.findByProduct(product);
+
+                    imageList.forEach(image -> log.info(image));
+
+                    List<ImageDTO> imageDTOList = imageList.stream()
+                            .map(image -> modelMapper.map(image, ImageDTO.class))
+                            .collect(Collectors.toList());
+
+                    imageDTOList.forEach(image -> log.info(image));
+
+                    List<Long> inos = new ArrayList<>();
+
+                    for(Image image : imageList) {
+                        for (ImageDTO imageDTO : imageDTOList) {
+                            if (image.getProduct().getPno() == productDTO.getPno()) {
+                                imageDTO.setPno(image.getProduct().getPno());
+
+                                inos.add(imageDTO.getIno());
+
+                            }
+                        }
+                    }
+
+                    imageDTOList.forEach(image -> log.info("최종 imageDTOList : " + image));
+
+                    productDTO.setImageDTOList(imageDTOList);
+                    productDTO.setInos(inos);
+
                 }
             }
         }
@@ -93,42 +136,6 @@ public class ProductService {
         //엔티티의 category Cno(id)를 dto에 set
 
         productDTOList.forEach(productDTO -> log.info(productDTO));
-
-        //////////////
-        //이미지 찾기
-
-        List<Image> imageList = imageRepository.findAll();
-
-        imageList.forEach(image -> log.info(image));
-
-        List<ImageDTO> imageDTOList = imageList.stream()
-                .map(image -> modelMapper.map(image, ImageDTO.class))
-                .collect(Collectors.toList());
-
-        imageDTOList.forEach(image -> log.info(image));
-
-        // pno가 같은 productdto에 imageDTOList 넣어주기
-        // 제미니가 알려준 코드 (검증 필요)
-        //List<Product> productList = productRepository.findAll();
-
-        //productList.forEach(product -> log.info(product));
-
-//        List<ProductDTO> productDTOList = productList.stream()
-//                .map(product -> {
-//                    ProductDTO productDTO = modelMapper.map(product, ProductDTO.class);
-//                    productDTO.setImages(product.getImages().stream()
-//                            .map(image -> modelMapper.map(image, ImageDTO.class))
-//                            .collect(Collectors.toList()));
-//                    return productDTO;
-//                })
-//                .collect(Collectors.toList());
-//
-//        productDTOList.forEach(productDTO -> log.info(productDTO));
-
-
-
-
-       // productDTO.setImageDTOList(imageDTOList);
 
         return productDTOList;
     }
@@ -150,12 +157,33 @@ public class ProductService {
         imageList.forEach(image -> log.info(image));
 
         List<ImageDTO> imageDTOList = imageList.stream()
-                .map(image -> modelMapper.map(image, ImageDTO.class))
+                .map(image ->modelMapper.map(image, ImageDTO.class))
                 .collect(Collectors.toList());
 
         imageDTOList.forEach(image -> log.info(image));
 
+        List<Long> inos = new ArrayList<>();
+
+        //image를 product 객체로 받기 때문에 dto 변환시 pno가 null로 들어감
+        //image와 product의 pno가 같을 때,
+        //imageDTO에 pno를 set 해주는 동시에 inos 배열을 만들어
+        //거기에 DTO의 ino를 set 해서 productDTO에 imageDTOList와 inos를 set
+
+        for(Image image : imageList) {
+            for (ImageDTO imageDTO : imageDTOList) {
+                if (image.getProduct().getPno() == productDTO.getPno()) {
+                    imageDTO.setPno(image.getProduct().getPno());
+
+                    inos.add(imageDTO.getIno());
+
+                }
+            }
+        }
+
+        imageDTOList.forEach(image -> log.info("최종 imageDTOList : " + image));
+
         productDTO.setImageDTOList(imageDTOList);
+        productDTO.setInos(inos);
 
         return productDTO;
 
@@ -178,6 +206,36 @@ public class ProductService {
             for(ProductDTO productDTO : productDTOList){
                 if(product.getPno() == productDTO.getPno()){
                     productDTO.setCategoryid(product.getCategory().getCno());
+
+                    List<Image> imageList = imageRepository.findByProduct(product);
+
+                    imageList.forEach(image -> log.info(image));
+
+                    List<ImageDTO> imageDTOList = imageList.stream()
+                            .map(image -> modelMapper.map(image, ImageDTO.class))
+                            .collect(Collectors.toList());
+
+                    imageDTOList.forEach(image -> log.info(image));
+
+                    List<Long> inos = new ArrayList<>();
+
+                    for(Image image : imageList) {
+                        for (ImageDTO imageDTO : imageDTOList) {
+                            if (image.getProduct().getPno() == productDTO.getPno()) {
+                                imageDTO.setPno(image.getProduct().getPno());
+
+                                inos.add(imageDTO.getIno());
+
+                            }
+                        }
+                    }
+
+                    imageDTOList.forEach(image -> log.info("최종 imageDTOList : " + image));
+
+                    productDTO.setImageDTOList(imageDTOList);
+                    productDTO.setInos(inos);
+
+
                 }
             }
         }
@@ -189,7 +247,8 @@ public class ProductService {
     }
 
     //상품 수정
-    public void productModify(ProductDTO productDTO) {
+    public void productModify(ProductDTO productDTO,
+                              List<MultipartFile> multipartFiles) throws Exception {
 
         log.info("service에서 받은 DTO 확인 : " + productDTO);
 
@@ -204,6 +263,45 @@ public class ProductService {
         log.info("변환된 product : " + product);
 
         productRepository.save(product);
+
+        // 이미지
+        List<Image> imageList = imageRepository.findByProduct(product);
+
+        imageList.forEach(image -> log.info(image));
+
+        List<ImageDTO> imageDTOList = imageList.stream()
+                .map(image ->modelMapper.map(image, ImageDTO.class))
+                .collect(Collectors.toList());
+
+        imageDTOList.forEach(image -> log.info(image));
+
+        List<Long> inos = new ArrayList<>();
+
+        for(Image image : imageList) {
+            for (ImageDTO imageDTO : imageDTOList) {
+                if (image.getProduct().getPno() == productDTO.getPno()) {
+                    imageDTO.setPno(image.getProduct().getPno());
+
+                    inos.add(imageDTO.getIno());
+
+                }
+            }
+        }
+
+        imageDTOList.forEach(image -> log.info("최종 imageDTOList : " + image));
+
+        productDTO.setImageDTOList(imageDTOList);
+        productDTO.setInos(inos);
+
+        //이미지 등록
+        for (int i=0; i < multipartFiles.size(); i++){
+
+            imageService
+                    .updateImage(inos.get(i), multipartFiles.get(i));
+
+
+        }
+
 
     }
 

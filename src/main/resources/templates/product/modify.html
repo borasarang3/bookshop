@@ -12,9 +12,9 @@
 
     <h1 class="text-center fw-bold mb-4">상품 정보 수정</h1>
 
-    <form class="row g-3" action="/product/modifypost" method="post">
+    <form class="row g-3" action="/product/modifypost" enctype="multipart/form-data" method="post">
 
-        <input type="text" th:value="${productDTO.pno}" name="pno" readonly>
+        <input type="hidden" th:value="${productDTO.pno}" name="pno" readonly>
 
         <div class="col-md-6">
             <div class="input-group mb-1">
@@ -30,7 +30,7 @@
                     <option th:each="category: ${categoryList}"
                             th:attr="selected=${category.cno == productDTO.categoryid}"
                             th:value="${category.cno}">[[${category.cname}]]</option>
-                    <input type="text" class="category" name="categoryid">
+                    <input type="hidden" class="category" name="categoryid">
                 </select>
             </div>
         </div>
@@ -70,7 +70,7 @@
                 <select class="form-select" id="inputGroupSelect02">
                     <option class="status" th:attr="selected=${productDTO.itemSellStatus == 'SELL'}" th:value="SELL">판매중</option>
                     <option class="status" th:attr="selected=${productDTO.itemSellStatus == 'SOLD_OUT'}" th:value="SOLD_OUT">품절</option>
-                    <input type="text" class="itemSellStatus" name="itemSellStatus">
+                    <input type="hidden" class="itemSellStatus" name="itemSellStatus">
                 </select>
             </div>
         </div>
@@ -83,9 +83,13 @@
 
         <!--기본적인 등록 기능 구현 후에 이미지 기능 추가-->
         <!--이미지도 필수 요소-->
-        <div class="col-12">
-            <div class="input-group mb-1">
-                <input type="file" name="imgFile" class="form-control" placeholder="이미지 파일을 등록해주세요." required>
+        <div class="col-12"th:if="${not #lists.isEmpty(productDTO.imageDTOList)}">
+            <div class="input-group mb-1" th:each="imageDTO: ${productDTO.imageDTOList}">
+                <input type="file" name="imgFile" class="form-control" id="inputGroupFile02" placeholder="이미지 파일을 등록해주세요.">
+                <input type="hidden" name="imgino" class="form-control" th:value="${imageDTO.ino}">
+                <label class="input-group-text"
+                       th:text="${not #lists.isEmpty(productDTO.imageDTOList)} ? ${imageDTO.imgName} : '상품 이미지' + ${status.index + 1}"
+                       for="inputGroupFile02">Upload</label>
             </div>
         </div>
 

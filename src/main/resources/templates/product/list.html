@@ -40,12 +40,12 @@
 
     <!-- 상품칸 -->
         <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
-            <div class="row g-0" th:each="dto: ${productDTOList}">
-                <input class="pno" type="text" th:value="${dto.pno}" readonly>
+            <div class="row g-0 my-3" th:each="dto: ${productDTOList}">
+                <input class="pno" type="hidden" th:value="${dto.pno}" readonly>
                 <div class="col-md-4">
                     <!--이미지 넣는 구역-->
-                    <a class="productImg" href="#">
-                        <img src="..." class="img-fluid rounded-start" alt="...">
+                    <a class="productImg" href="#" >
+                        <img th:src="${dto.imageDTOList[0].imgUrl}" style="height: 100%" class="img-fluid" alt="${dto.productName}">
                     </a>
                 </div>
                 <div class="col-md-8">
@@ -67,17 +67,22 @@
     <!--카드 - 상품 -->
 
     <!-- 페이징처리 -->
-    <div class="mx-auto p-2">
+    <div class="mx-auto p-2"
+         th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
         <nav aria-label="Page navigation example">
             <ul class="pagination justify-content-center">
                 <button type="button" class="btn btn-outline-secondary me-3">처음</button>
-                <button type="button" class="btn btn-outline-secondary me-3">이전</button>
+                <button type="button" th:classappend="${products.first} ? 'disabled' : ''
+                        "class="btn btn-outline-secondary me-3"
+                        th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
 
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item me-3"><a class="page-link" href="#">3</a></li>
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
+                    <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
+                </li>
 
-                <button type="button" class="btn btn-outline-secondary me-3">다음</button>
+                <button type="button" class="btn btn-outline-secondary mx-3"
+                        th:classappend="${products.last} ? 'disabled' : ''"
+                        th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
                 <button type="button" class="btn btn-outline-secondary">끝</button>
 
             </ul>
