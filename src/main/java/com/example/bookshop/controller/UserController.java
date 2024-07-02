@@ -1,9 +1,7 @@
 package com.example.bookshop.controller;
 
 import com.example.bookshop.constant.Role;
-import com.example.bookshop.dto.CategoryDTO;
-import com.example.bookshop.dto.ProductDTO;
-import com.example.bookshop.dto.UserDTO;
+import com.example.bookshop.dto.*;
 import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.ProductService;
@@ -11,18 +9,23 @@ import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @Log4j2
@@ -323,8 +326,11 @@ public class UserController {
     }
 
     //등록한 상품 확인
-    @GetMapping("/product")
-    public void userProduct(Principal principal, Model model) {
+    @GetMapping({"/product", "/product/{page}"})
+    public void userProduct(Principal principal,
+                            ProductSearchDTO productSearchDTO,
+                            @PathVariable("page") Optional<Integer> page,
+                            Model model) {
         //post 접근 불가로 get 변경해둠
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
@@ -336,10 +342,21 @@ public class UserController {
         model.addAttribute("loginUser", loginUser);
 
         List<ProductDTO> productDTOList = productService.userProduct(loginUser.getUserName());
-
         log.info(productDTOList);
 
         model.addAttribute("productDTOList", productDTOList);
+
+        // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 1번부터 3개
+        // 테스트하고 10개로 만들어두기
+        Pageable pageable =
+                PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+
+        Page<MainProductDTO> products = productService.getProductImagPage(productSearchDTO, pageable);
+
+        model.addAttribute("products", products);
+        model.addAttribute("productSearchDTO", productSearchDTO);
+        model.addAttribute("maxPage", 10);
+
 
     }
 

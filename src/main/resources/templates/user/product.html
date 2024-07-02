@@ -5,6 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <title>등록한 상품 확인</title>
+
+    <link th:href="@{/css/productlist.css}" rel="stylesheet">
+
 </head>
 <body>
 
@@ -29,8 +32,9 @@
             </tr>
             </thead>
             <tbody>
-            <tr role="row" th:each="dto: ${productDTOList}">
 
+            <tr role="row"  th:each="dto: ${products.getContent}">
+                <th:block th:if="${dto.seller == loginUser.userName}">
                 <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
                 <th scope="row" class="readBtn" >
                     <a class="link-dark " th:text="${dto.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
@@ -40,9 +44,34 @@
                 <th scope="row">[[${dto.productPrice}]]</th>
                 <!--리뷰 구현 후 리뷰 개수 반영하기-->
                 <th scope="row">0</th>
+                </th:block>
             </tr>
+
             </tbody>
         </table>
+        <div class="mx-auto p-2"
+             th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary me-3"
+                            th:onclick="'javascript:page(0)'">처음</button>
+                    <button type="button" th:classappend="${products.first} ? 'disabled' : ''
+                        "class="btn btn-outline-secondary me-3"
+                            th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
+
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
+                        <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
+                    </li>
+
+                    <button type="button" class="btn btn-outline-secondary mx-3"
+                            th:classappend="${products.last} ? 'disabled' : ''"
+                            th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            th:onclick="'javascript:page(' + ${end -1} + ')'">끝</button>
+
+                </ul>
+            </nav>
+        </div>
     </th:block>
 
 
@@ -50,6 +79,11 @@
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
+
+    function page(page) {
+
+        location.href= "/user/product/" + page;
+    }
 
     $(document).ready(function (){
         const result = [[${result}]]

@@ -13,39 +13,38 @@
 
 <div layout:fragment="content">
 
-    <div class="container px-4 text-center">
-        <div class="row gx-5">
-            <!--카테고리 누른 곳의 이름이 상품 목록란에 출력-->
-            <div class="col mb-5 text-center fw-bold"><h1>상품 목록</h1></div>
-            <!--검색창-->
-            <div class="col mx-auto p-2">
-                <form class="d-flex" role="search">
-                    <div class="input-group mb-3">
-                        <select class="form-select" aria-label="Default select example">
-                            <option selected>전체</option>
-                            <option value="1">도서명</option>
-                            <option value="2">글쓴이</option>
-                            <option value="3">출판사</option>
-                            <option value="3">판매자</option>
+    <form th:action="@{'/product/list/' + ${products.number}}" method="get" th:object="${products}">
+
+        <div class="container px-4 text-center">
+            <div class="row gx-5">
+                <!--카테고리 누른 곳의 이름이 상품 목록란에 출력-->
+                <div class="col mb-5 text-center fw-bold"><h1>상품 목록</h1></div>
+                <!--검색창-->
+                <div class="col mx-auto p-2">
+                    <div class="input-group mb-3" th:object="${productSearchDTO}">
+                        <select th:field="*{searchBy}" id="searchBy" class="form-select" aria-label="Default select example">
+                            <option selected value="">전체</option>
+                            <option value="productName">도서명</option>
+                            <option value="writer">글쓴이</option>
+                            <option value="publish">출판사</option>
+                            <option value="seller">판매자</option>
                         </select>
-                        <input type="search" class="form-control" placeholder="Search" aria-label="Search">
-                        <button class="btn btn-primary" type="submit">검색</button>
+                        <input type="text" th:field="*{searchQuery}" id="searchQuery" class="form-control" placeholder="검색" aria-label="Search">
+                        <button class="btn btn-primary search" type="button">검색</button>
                     </div>
-
-                </form>
+                </div>
+                <!--검색창-->
             </div>
-            <!--검색창-->
         </div>
-    </div>
 
-    <!-- 상품칸 -->
+        <!-- 상품칸 -->
         <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
-            <div class="row g-0 my-3" th:each="dto: ${productDTOList}">
+            <div class="row g-0 my-3" th:each="dto: ${products}">
                 <input class="pno" type="hidden" th:value="${dto.pno}" readonly>
                 <div class="col-md-4">
                     <!--이미지 넣는 구역-->
                     <a class="productImg" href="#" >
-                        <img th:src="${dto.imageDTOList[0].imgUrl}" style="height: 100%" class="img-fluid" alt="${dto.productName}">
+                        <img th:src="${dto.imgUrl}" style="height: 100%" class="img-fluid" alt="${dto.productName}">
                     </a>
                 </div>
                 <div class="col-md-8">
@@ -64,41 +63,60 @@
                 </div>
             </div>
         </div>
-    <!--카드 - 상품 -->
+        <!--카드 - 상품 -->
 
-    <!-- 페이징처리 -->
-    <div class="mx-auto p-2"
-         th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
-        <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-center">
-                <button type="button" class="btn btn-outline-secondary me-3">처음</button>
-                <button type="button" th:classappend="${products.first} ? 'disabled' : ''
+        <!-- 페이징처리 -->
+        <div class="mx-auto p-2"
+             th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination justify-content-center">
+                    <button type="button" class="btn btn-outline-secondary me-3"
+                            th:onclick="'javascript:page(0)'">처음</button>
+                    <button type="button" th:classappend="${products.first} ? 'disabled' : ''
                         "class="btn btn-outline-secondary me-3"
-                        th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
+                            th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
 
-                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
-                    <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
-                </li>
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
+                        <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
+                    </li>
 
-                <button type="button" class="btn btn-outline-secondary mx-3"
-                        th:classappend="${products.last} ? 'disabled' : ''"
-                        th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
-                <button type="button" class="btn btn-outline-secondary">끝</button>
+                    <button type="button" class="btn btn-outline-secondary mx-3"
+                            th:classappend="${products.last} ? 'disabled' : ''"
+                            th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                            th:onclick="'javascript:page(' + ${end -1} + ')'">끝</button>
 
-            </ul>
-        </nav>
-    </div>
-    <!-- 페이징처리 -->
+                </ul>
+            </nav>
+        </div>
+        <!-- 페이징처리 -->
 
-
-
-
+    </form>
 
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
 
+    function page(page){
+//            var searchDateType = $("#searchDateType").val();
+        // var itemSellStatus = $("#itemSellStatus").val();
+        var searchBy = $("#searchBy").val();
+        var searchQuery = $("#searchQuery").val();
+        console.log("진입")
+        location.href="/product/list/" + page +
+            "?searchBy=" + searchBy +
+            "&searchQuery=" + searchQuery;
+    }
+
     $(document).ready(function () {
+
+        //html이 완전히 불러와진 뒤에 추가됨
+        //html에서 javascript 파싱 순서 : 위에서부터 아래로
+        //파싱중 <script> 태그를 만나면 html 파싱을 멈추고, script 내부의 자바스크립트 실행
+        //자바스크립트 파일 실행이 완료되면 다시 html 파싱
+
+        //함수가 $(document).ready 안에 있으면 th를 실행할 당시
+        //함수가 존재하지 않으므로 함수를 찾을 수 없음!
 
         let productImg = $(".productImg");
 
@@ -116,13 +134,20 @@
             location.href = '/product/read/' + pnoInput.val();
         })
 
+        //검색 기능
 
-
+        $(".search").on("click", function (e) {
+            e.preventDefault();
+            page(0);
+        })
 
 
 
 
     })
+
+
+
 
 </script>
 

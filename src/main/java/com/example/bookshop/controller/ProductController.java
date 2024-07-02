@@ -43,6 +43,9 @@ public class ProductController {
                             @PathVariable("page")Optional<Integer> page,
                             Model model){
 
+        log.info("productSearchDTO : " + productSearchDTO);
+        log.info("page : " + page);
+
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
@@ -51,7 +54,7 @@ public class ProductController {
         Pageable pageable =
                 PageRequest.of(page.isPresent() ? page.get() : 0, 3);
 
-        Page<Product> products = productService.getProductPage(productSearchDTO, pageable);
+        Page<MainProductDTO> products = productService.getProductImagPage(productSearchDTO, pageable);
 
         model.addAttribute("products", products);
         model.addAttribute("productSearchDTO", productSearchDTO);
@@ -140,7 +143,7 @@ public class ProductController {
 
         redirectAttributes.addFlashAttribute("result", "상품 등록이 완료되었습니다.");
 
-        return "redirect:/main";
+        return "redirect:/";
     }
 
     @GetMapping("/modify/{pno}")

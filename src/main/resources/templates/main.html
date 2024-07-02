@@ -5,24 +5,100 @@
 <head>
     <meta charset="UTF-8">
     <title>메인 페이지</title>
+    <link rel="canonical" href="https://picsum.photos">
+
+
 </head>
 <body>
 
 <div layout:fragment="content">
 
-    <h1>메인 페이지</h1>
+    <!--캐러셀-->
+    <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
+            <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2" aria-label="Slide 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="3000">
+                <img src="/img/서점1.jpg" class="d-block w-100" style="width: 1320px; height: 500px;" alt="...">
+            </div>
+            <div class="carousel-item" data-bs-interval="3000">
+                <img src="/img/서점2.jpg" class="d-block w-100" style="width: 1320px; height: 500px;" alt="...">
+            </div>
+            <div class="carousel-item" data-bs-interval="3000">
+                <img src="/img/서점3.jpg" class="d-block w-100" style="width: 1320px; height: 500px;" alt="...">
+            </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
+    <!--캐러셀-->
+
+    <!--이미지 카드-->
+    <h3 class="text-center mt-5">새로 들어온 책</h3>
+    <div class="row row-cols-1 row-cols-md-6 g-4 mt-3"
+         th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
+        <div class="col">
+            <a class="page-link" href="#" th:if="${products.number - 1} >= 0" th:onclick="'javascript:page(' + ${products.number - 1} + ')'">
+                <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
+            </a>
+            <a class="page-link" href="#" th:unless="${products.number - 1} >= 0" th:onclick="'javascript:page(2)'">
+                <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
+            </a>
+        </div>
+
+        <div class="col" th:each="product: ${products.getContent()}">
+
+            <a th:href="'/product/read/' + ${product.pno}" style="text-decoration: none">
+                <div class="card h-100 text-center border-0">
+                    <img th:src="${product.imgUrl}" style="height: 100%" class="card-img-top" alt="${product.productName}">
+                    <div class="card-body">
+                        <h5 class="card-title" th:text="${product.productName}" style="height: 100%">Card title</h5>
+                    </div>
+                </div>
+            </a>
+
+        </div>
+
+        <div class="col">
+            <a class="page-link" href="#" th:if="${products.number + 1} <= 2" th:onclick="'javascript:page(' + ${products.number + 1} + ')'">
+                <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
+            </a>
+            <a class="page-link" href="#" th:unless="${products.number + 1} <= 2" th:onclick="'javascript:page(0)'">
+                <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
+            </a>
+        </div>
+
+
+    </div>
+    <!--이미지 카드-->
 
 </div>
 
 
 <script layout:fragment="script" th:inline="javascript">
 
-    $(document).ready(function () {
-        const result = [[${result}]]
+    function page(page) {
 
-        if (result){
-            alert(result)
-        }
+        location.href= "/" + page;
+    }
+
+    const result = [[${result}]]
+
+    if (result){
+        alert(result)
+    }
+
+    $(document).ready(function () {
+
     })
 
 

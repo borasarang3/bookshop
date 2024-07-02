@@ -1,9 +1,6 @@
 package com.example.bookshop.service;
 
-import com.example.bookshop.dto.CategoryDTO;
-import com.example.bookshop.dto.ImageDTO;
-import com.example.bookshop.dto.ProductDTO;
-import com.example.bookshop.dto.ProductSearchDTO;
+import com.example.bookshop.dto.*;
 import com.example.bookshop.entity.Category;
 import com.example.bookshop.entity.Image;
 import com.example.bookshop.entity.Product;
@@ -73,6 +70,20 @@ public class ProductService {
 
         return productDTO;
 
+    }
+
+    //검색+페이징+이미지 (내림차순 버전)
+    @Transactional(readOnly = true)
+    public Page<MainProductDTO> getProductImagPageDesc (ProductSearchDTO productSearchDTO,
+                                                    Pageable pageable) {
+        return productRepository.getMainProductPageDesc(productSearchDTO, pageable);
+    }
+
+    //검색+페이징+이미지
+    @Transactional(readOnly = true)
+    public Page<MainProductDTO> getProductImagPage (ProductSearchDTO productSearchDTO,
+                                                            Pageable pageable) {
+        return productRepository.getMainProductPage(productSearchDTO, pageable);
     }
 
     //검색+페이징처리

@@ -152,5 +152,46 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
         return new PageImpl<>(content, pageable, total);
     }
 
+    @Override
+    public Page<MainProductDTO> getMainProductPageDesc(ProductSearchDTO productSearchDTO, Pageable pageable) {
+        //searchQuery를 입력받아서 상품명과 비슷한 걸 찾는다.
+
+        QProduct product = QProduct.product;
+        QImage image = QImage.image;
+
+        QueryResults<MainProductDTO> result = jpaQueryFactory.select(
+                        new QMainProductDTO(
+                                product.pno,
+                                product.seller,
+                                product.productName,
+                                product.writer,
+                                product.publish,
+                                product.productContent,
+                                product.productPrice,
+                                product.productAmount,
+                                product.category.cno,
+                                product.itemSellStatus,
+                                product.regidate,
+                                image.imgUrl
+                        )
+                )
+                .from(image)
+                .join(image.product, product)
+                .where(image.repimgYn.eq("Y")) //대표이미지
+                .where(productNameLike(productSearchDTO.getSearchQuery())) //상품명 검색 입력받은 것과 같은 거
+                .where(regDtsAfter(productSearchDTO.getSearchDateType()),
+                        searchSellStatusEq(productSearchDTO.getItemSellStatus()),
+                        searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
+                .orderBy(product.pno.desc())
+                .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터
+                .limit(pageable.getPageSize()) //size = 10 //10
+                .fetchResults();
+
+        List<MainProductDTO> content = result.getResults();
+        long total = result.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
 
 }
