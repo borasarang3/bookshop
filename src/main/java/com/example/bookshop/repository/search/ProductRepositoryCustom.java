@@ -14,6 +14,9 @@ public interface ProductRepositoryCustom {
     //product + 이미지
     Page<MainProductDTO> getMainProductPage(ProductSearchDTO productSearchDTO, Pageable pageable);
 
+    //product + 이미지 + 카테고리
+    Page<MainProductDTO> getMainProductCategoryPage(Long cno, ProductSearchDTO productSearchDTO, Pageable pageable);
+
     //내림차순
     Page<MainProductDTO> getMainProductPageDesc(ProductSearchDTO productSearchDTO, Pageable pageable);
 

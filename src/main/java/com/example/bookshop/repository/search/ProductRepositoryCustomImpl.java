@@ -93,6 +93,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     @Override
     public Page<Product> getProductPage(ProductSearchDTO productSearchDTO, Pageable pageable) {
         //판매 상태, 등록일, 검색어로 검색
+        //등록일 기준으로 내림차순
 
         QueryResults<Product> result = jpaQueryFactory.selectFrom(QProduct.product)
                 .where( regDtsAfter(productSearchDTO.getSearchDateType()),
@@ -153,6 +154,48 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
     }
 
     @Override
+    public Page<MainProductDTO> getMainProductCategoryPage(Long cno, ProductSearchDTO productSearchDTO, Pageable pageable) {
+        //searchQuery를 입력받아서 상품명과 비슷한 걸 찾는다.
+
+        QProduct product = QProduct.product;
+        QImage image = QImage.image;
+
+        QueryResults<MainProductDTO> result = jpaQueryFactory.select(
+                        new QMainProductDTO(
+                                product.pno,
+                                product.seller,
+                                product.productName,
+                                product.writer,
+                                product.publish,
+                                product.productContent,
+                                product.productPrice,
+                                product.productAmount,
+                                product.category.cno,
+                                product.itemSellStatus,
+                                product.regidate,
+                                image.imgUrl
+                        )
+                )
+                .from(image)
+                .join(image.product, product)
+                .where(image.repimgYn.eq("Y")) //대표이미지
+                .where(product.category.cno.eq(cno)) //카테고리 번호와 같은 것
+                .where(productNameLike(productSearchDTO.getSearchQuery())) //상품명 검색 입력받은 것과 같은 거
+                .where(regDtsAfter(productSearchDTO.getSearchDateType()),
+                        searchSellStatusEq(productSearchDTO.getItemSellStatus()),
+                        searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
+                .orderBy(product.pno.asc())
+                .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터
+                .limit(pageable.getPageSize()) //size = 10 //10
+                .fetchResults();
+
+        List<MainProductDTO> content = result.getResults();
+        long total = result.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
     public Page<MainProductDTO> getMainProductPageDesc(ProductSearchDTO productSearchDTO, Pageable pageable) {
         //searchQuery를 입력받아서 상품명과 비슷한 걸 찾는다.
 
@@ -182,7 +225,7 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(regDtsAfter(productSearchDTO.getSearchDateType()),
                         searchSellStatusEq(productSearchDTO.getItemSellStatus()),
                         searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
-                .orderBy(product.pno.desc())
+                .orderBy(product.regidate.desc())
                 .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터
                 .limit(pageable.getPageSize()) //size = 10 //10
                 .fetchResults();

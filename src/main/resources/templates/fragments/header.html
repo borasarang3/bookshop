@@ -26,12 +26,12 @@
                                 카테고리
                             </a>
                             <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="/product/list">전체</a></li>
-                                <li th:each="category: ${categoryList}">
-                                    <a class="dropdown-item" href="#">
-                                        [[${category.cname}]]
-                                    </a>
-                                </li>
+                                    <li><a class="dropdown-item" href="/product/list">전체</a></li>
+                                    <li th:each="category: ${categoryList}">
+                                        <a class="dropdown-item" th:href="@{'/product/list?cno='+${category.cno}}" data-category-num="[[${category.cno}]]">
+                                            [[${category.cname}]]
+                                        </a>
+                                    </li>
                             </ul>
                         </li>
                         <li class="nav-item">
@@ -55,7 +55,7 @@
                             <ul class="dropdown-menu">
                                 <li><a class="dropdown-item" href="/user/read">내 정보 확인</a></li>
                                 <li><a class="dropdown-item" href="/user/buy">구매 이력 확인</a></li>
-                                <li><a class="dropdown-item" href="/user/product">등록한 상품 확인</a></li>
+                                <li><a class="dropdown-item" href="/user/myproduct">등록한 상품 확인</a></li>
                                 <li><a class="dropdown-item" href="/user/review">작성한 리뷰 확인</a></li>
                             </ul>
                         </li>
@@ -81,7 +81,20 @@
 
             </div>
         </nav>
+
+        <script>
+
+            let category = $(".categoryNum");
+            category.empty();
+
+
+
+
+        </script>
+
     </div>
+
+
 
 </body>
 </html>

@@ -30,6 +30,7 @@ public class SecurityConfig {
                         .requestMatchers("/user/adminregister").permitAll()
                         .requestMatchers("/user/**").authenticated()
                         .requestMatchers("/product/list").permitAll()
+                        .requestMatchers("/product/list/**").permitAll()
                         .requestMatchers("/product/read/**").permitAll()
                         .requestMatchers("/product/**").authenticated()
                         .requestMatchers("css/**", "/js/**", "/**").permitAll()

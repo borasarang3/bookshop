@@ -39,29 +39,44 @@ public class ProductController {
 
     //상품 목록
     @GetMapping({"/list", "/list/{page}"})
-    public String productList(ProductSearchDTO productSearchDTO,
+    public String productList(Long cno,
+                            ProductSearchDTO productSearchDTO,
                             @PathVariable("page")Optional<Integer> page,
                             Model model){
 
+        log.info("선택된 카테고리 : " + cno );
         log.info("productSearchDTO : " + productSearchDTO);
         log.info("page : " + page);
 
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+        model.addAttribute("categoryNum", cno);
 
         // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 1번부터 3개
         // 테스트하고 10개로 만들어두기
         Pageable pageable =
-                PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+                PageRequest.of(page.isPresent() ? page.get() : 0, 10);
 
-        Page<MainProductDTO> products = productService.getProductImagPage(productSearchDTO, pageable);
+        if (cno == null){
+            Page<MainProductDTO> products = productService.getProductImagPage(productSearchDTO, pageable);
+            log.info(products);
+            model.addAttribute("products", products);
+            model.addAttribute("productSearchDTO", productSearchDTO);
+            model.addAttribute("maxPage", 10);
+            return "/product/list";
 
-        model.addAttribute("products", products);
-        model.addAttribute("productSearchDTO", productSearchDTO);
-        model.addAttribute("productDTOList", productService.list());
-        model.addAttribute("maxPage", 5);
+        } else {
 
-        return "/product/list";
+            Page<MainProductDTO> products = productService.getMainProductCategoryPage(cno,productSearchDTO, pageable);
+            log.info("있나요? : " + products);
+            model.addAttribute("products", products);
+            model.addAttribute("productSearchDTO", productSearchDTO);
+            model.addAttribute("maxPage", 10);
+            return "/product/list";
+
+        }
+
+
     }
 
     @GetMapping("/read/{pno}")
@@ -179,7 +194,7 @@ public class ProductController {
 
         if (imageFileList.get(0).isEmpty() && productDTO.getPno() == null){
             redirectAttributes.addFlashAttribute("result", "이미지를 업로드 해주세요.");
-            return "redirect:/product/register";
+            return "redirect:/product/modify/" + productDTO.getPno();
         }
 
         log.info("getBytes : " + Arrays.toString(imageFileList.get(0).getBytes()));
@@ -191,7 +206,7 @@ public class ProductController {
 
         redirectAttributes.addFlashAttribute("result", "상품 정보가 수정되었습니다.");
 
-        return "redirect:/user/product";
+        return "redirect:/user/myproduct";
     }
 
     @PostMapping("/remove")
@@ -202,7 +217,7 @@ public class ProductController {
 
         redirectAttributes.addFlashAttribute("result", "상품이 삭제되었습니다.");
 
-        return "redirect:/user/product";
+        return "redirect:/user/myproduct";
     }
 
 

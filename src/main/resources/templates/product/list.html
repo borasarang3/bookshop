@@ -12,84 +12,96 @@
 <body>
 
 <div layout:fragment="content">
-
     <form th:action="@{'/product/list/' + ${products.number}}" method="get" th:object="${products}">
 
-        <div class="container px-4 text-center">
-            <div class="row gx-5">
-                <!--카테고리 누른 곳의 이름이 상품 목록란에 출력-->
-                <div class="col mb-5 text-center fw-bold"><h1>상품 목록</h1></div>
-                <!--검색창-->
-                <div class="col mx-auto p-2">
-                    <div class="input-group mb-3" th:object="${productSearchDTO}">
-                        <select th:field="*{searchBy}" id="searchBy" class="form-select" aria-label="Default select example">
-                            <option selected value="">전체</option>
-                            <option value="productName">도서명</option>
-                            <option value="writer">글쓴이</option>
-                            <option value="publish">출판사</option>
-                            <option value="seller">판매자</option>
-                        </select>
-                        <input type="text" th:field="*{searchQuery}" id="searchQuery" class="form-control" placeholder="검색" aria-label="Search">
-                        <button class="btn btn-primary search" type="button">검색</button>
+            <div class="container px-4 text-center">
+                <div class="row gx-5">
+                    <!--카테고리 누른 곳의 이름이 상품 목록란에 출력-->
+
+                    <div class="col mb-5 text-center fw-bold" th:unless="${categoryNum}">
+                        <h1 class="cname">전체</h1>
                     </div>
-                </div>
-                <!--검색창-->
-            </div>
-        </div>
-
-        <!-- 상품칸 -->
-        <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
-            <div class="row g-0 my-3" th:each="dto: ${products}">
-                <input class="pno" type="hidden" th:value="${dto.pno}" readonly>
-                <div class="col-md-4">
-                    <!--이미지 넣는 구역-->
-                    <a class="productImg" href="#" >
-                        <img th:src="${dto.imgUrl}" style="height: 100%" class="img-fluid" alt="${dto.productName}">
-                    </a>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5><span th:if="${dto.itemSellStatus.name() == 'SELL'}" class="badge text-bg-primary">판매중</span></h5>
-                        <h5><span th:if="${dto.itemSellStatus.name() == 'SOLD_OUT'}" class="badge text-bg-secondary">품절</span></h5>
-
-                        <a class="h5 card-title fw-bold productName" th:text="${dto.productName}" th:href="@{'/product/read/' + ${dto.pno}}" style="text-decoration: none">도서명</a>
-                        <p class="card-text">
-                            [[${dto.writer}]] | [[${dto.publish}]] | [[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]] <br>
-                            [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
-
-                        <button type="button" class="btn btn-outline-primary fw-bold">장바구니</button>
-                        <button type="button" class="btn btn-primary fw-bold">바로구매</button>
+                    <div class="col mb-5 text-center fw-bold" th:each="category: ${categoryList}" th:if="${category.cno == categoryNum}">
+                        <h1 class="cname">[[${category.cname}]]</h1>
                     </div>
+                    <!--검색창-->
+                    <div class="col mx-auto p-2">
+                        <div class="input-group mb-3" th:object="${productSearchDTO}">
+                            <select th:field="*{searchBy}" id="searchBy" class="form-select" aria-label="Default select example">
+                                <option selected value="">전체</option>
+                                <option value="productName">도서명</option>
+                                <option value="writer">글쓴이</option>
+                                <option value="publish">출판사</option>
+                                <option value="seller">판매자</option>
+                            </select>
+                            <input type="text" th:field="*{searchQuery}" id="searchQuery" class="form-control" placeholder="검색" aria-label="Search">
+                            <button class="btn btn-primary search" type="button">검색</button>
+                        </div>
+                    </div>
+                    <!--검색창-->
                 </div>
             </div>
-        </div>
-        <!--카드 - 상품 -->
 
-        <!-- 페이징처리 -->
-        <div class="mx-auto p-2"
-             th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination justify-content-center">
-                    <button type="button" class="btn btn-outline-secondary me-3"
-                            th:onclick="'javascript:page(0)'">처음</button>
-                    <button type="button" th:classappend="${products.first} ? 'disabled' : ''
+            <th:block th:if="${#lists.size(products.getContent()) == 0}">
+                <h3 class="text-center">아직 등록된 상품이 없습니다.</h3>
+            </th:block>
+
+            <!-- 상품칸 -->
+            <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
+                <div class="row g-0 my-3" th:each="dto: ${products}">
+                    <th:block >
+                        <input class="pno" type="hidden" th:value="${dto.pno}" readonly>
+                        <input class="pno" type="hidden" th:value="${dto.categoryid}" readonly>
+                        <div class="col-md-4">
+                            <!--이미지 넣는 구역-->
+                            <a class="productImg" href="#" >
+                                <img th:src="${dto.imgUrl}" style="height: 100%" class="img-fluid" alt="${dto.productName}">
+                            </a>
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body">
+                                <h5><span th:if="${dto.itemSellStatus.name() == 'SELL'}" class="badge text-bg-primary">판매중</span></h5>
+                                <h5><span th:if="${dto.itemSellStatus.name() == 'SOLD_OUT'}" class="badge text-bg-secondary">품절</span></h5>
+
+                                <a class="h5 card-title fw-bold productName" th:text="${dto.productName}" th:href="@{'/product/read/' + ${dto.pno}}" style="text-decoration: none">도서명</a>
+                                <p class="card-text">
+                                    [[${dto.writer}]] | [[${dto.publish}]] | [[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]] <br>
+                                    [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
+
+                                <button type="button" class="btn btn-outline-primary fw-bold">장바구니</button>
+                                <button type="button" class="btn btn-primary fw-bold">바로구매</button>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
+            </div>
+            <!--카드 - 상품 -->
+
+            <!-- 페이징처리 -->
+            <div class="mx-auto p-2"
+                 th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
+                <nav aria-label="Page navigation example">
+                    <ul class="pagination justify-content-center">
+                        <button type="button" class="btn btn-outline-secondary me-3"
+                                th:onclick="'javascript:page(0)'">처음</button>
+                        <button type="button" th:classappend="${products.first} ? 'disabled' : ''
                         "class="btn btn-outline-secondary me-3"
-                            th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
+                                th:onclick="'javascript:page(' + ${products.number - 1} + ')'">이전</button>
 
-                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
-                        <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
-                    </li>
+                        <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${products.number eq page -1} ? 'active' : ''">
+                            <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
+                        </li>
 
-                    <button type="button" class="btn btn-outline-secondary mx-3"
-                            th:classappend="${products.last} ? 'disabled' : ''"
-                            th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
-                    <button type="button" class="btn btn-outline-secondary"
-                            th:onclick="'javascript:page(' + ${end -1} + ')'">끝</button>
+                        <button type="button" class="btn btn-outline-secondary mx-3"
+                                th:classappend="${products.last} ? 'disabled' : ''"
+                                th:onclick="'javascript:page(' + ${products.number + 1} + ')'">다음</button>
+                        <button type="button" class="btn btn-outline-secondary"
+                                th:onclick="'javascript:page(' + ${end -1} + ')'">끝</button>
 
-                </ul>
-            </nav>
-        </div>
-        <!-- 페이징처리 -->
+                    </ul>
+                </nav>
+            </div>
+            <!-- 페이징처리 -->
 
     </form>
 
@@ -107,6 +119,8 @@
             "?searchBy=" + searchBy +
             "&searchQuery=" + searchQuery;
     }
+
+
 
     $(document).ready(function () {
 

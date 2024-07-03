@@ -79,6 +79,14 @@ public class ProductService {
         return productRepository.getMainProductPageDesc(productSearchDTO, pageable);
     }
 
+    //검색+페이징+이미지+카테고리
+    @Transactional(readOnly = true)
+    public Page<MainProductDTO> getMainProductCategoryPage (Long cno, ProductSearchDTO productSearchDTO,
+                                                    Pageable pageable) {
+        return productRepository.getMainProductCategoryPage(cno, productSearchDTO, pageable);
+    }
+
+
     //검색+페이징+이미지
     @Transactional(readOnly = true)
     public Page<MainProductDTO> getProductImagPage (ProductSearchDTO productSearchDTO,

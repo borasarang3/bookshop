@@ -18,9 +18,9 @@
         <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 등록한 상품</div>
     </div>
 
-    <div class="h3 text-center mt-5" th:if="${#lists.size(productDTOList) == 0}">등록한 상품이 없습니다.</div>
-    <th:block th:unless="${#lists.size(productDTOList) == 0}">
-        <table class="table table-bordered text-center" th:if="${productDTOList}">
+    <div class="h3 text-center mt-5" th:if="${#lists.size(products.getContent()) == 0}">등록한 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.size(products.getContent()) == 0}">
+        <table class="table table-bordered text-center" th:if="${products.getContent()}">
             <thead>
             <tr class="table-dark">
                 <th scope="col">상품등록일</th>
@@ -82,7 +82,7 @@
 
     function page(page) {
 
-        location.href= "/user/product/" + page;
+        location.href= "/user/myproduct/" + page;
     }
 
     $(document).ready(function (){

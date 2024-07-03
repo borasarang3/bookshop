@@ -326,8 +326,8 @@ public class UserController {
     }
 
     //등록한 상품 확인
-    @GetMapping({"/product", "/product/{page}"})
-    public void userProduct(Principal principal,
+    @GetMapping({"/myproduct", "/myproduct/{page}"})
+    public String userProduct(Principal principal,
                             ProductSearchDTO productSearchDTO,
                             @PathVariable("page") Optional<Integer> page,
                             Model model) {
@@ -349,15 +349,15 @@ public class UserController {
         // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 1번부터 3개
         // 테스트하고 10개로 만들어두기
         Pageable pageable =
-                PageRequest.of(page.isPresent() ? page.get() : 0, 3);
+                PageRequest.of(page.isPresent() ? page.get() : 0, 10);
 
-        Page<MainProductDTO> products = productService.getProductImagPage(productSearchDTO, pageable);
+        Page<MainProductDTO> products = productService.getProductImagPageDesc(productSearchDTO, pageable);
 
         model.addAttribute("products", products);
         model.addAttribute("productSearchDTO", productSearchDTO);
         model.addAttribute("maxPage", 10);
 
-
+        return "/user/product";
     }
 
     //작성한 리뷰 확인

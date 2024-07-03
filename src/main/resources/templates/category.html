@@ -17,7 +17,6 @@
         카테고리 내의 상품 관리도 가능합니다.
     </p>
 
-
     <ul class="list-group">
         <li class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
             <div class="ms-2 m-auto">
@@ -30,14 +29,18 @@
         <!--상품 만들고 나서 카테고리에 속한 상품 수를 (1) 형태로 이름 옆에 적기-->
         <li class="list-group-item d-flex list-group-item-action justify-content-between align-items-start"
         th:each="dto: ${categoryDTOList}">
-            <div class="ms-2 m-auto">
-                <div>[[${dto.cname}]]</div>
+            <div class="ms-2 m-auto categoryinfo">
+                    <div>[[${dto.cname}]]</div>
+                    <input class="infoName" type="hidden" th:value="${dto.cname}">
+                    <input type="hidden" th:value="${dto.cno}">
             </div>
             <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 managBtn"
-                    data-bs-toggle="modal" data-bs-target="#new-modal">관리</button>
+                        data-bs-toggle="modal" data-bs-target="#new-modal">관리</button>
             <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn"
-                    data-bs-toggle="modal" data-bs-target="#new-modal">수정</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
+                        data-bs-toggle="modal" data-bs-target="#new-modal">수정</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn" disabled
+                   >삭제</button>
+
         </li>
 
     </ul>
@@ -55,12 +58,51 @@
                         <label for="categoryName" class="form-label fw-bold">카테고리 이름</label>
                         <input type="text" name="cname" class="form-control" id="categoryName" required>
                         <input type="hidden" name="cname1" class="form-control" id="categoryName1" readonly>
+
+
+
+                        <div class="manage" >
+                            <div class="h3 text-center mt-5" th:if="${#lists.size(products) == 0}">등록된 상품이 없습니다.</div>
+                            <th:block th:unless="${#lists.size(products) == 0}">
+                                <table class="table table-bordered text-center">
+                                    <thead>
+                                    <tr class="table-dark">
+                                        <th scope="col">상품 이름</th>
+                                        <th scope="col">글쓴이</th>
+                                        <th scope="col">판매자</th>
+                                        <th scope="col">출판사</th>
+                                        <th scope="col">가격</th>
+                                        <th scope="col">상품등록일</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr role="row" th:each="product: ${products}">
+                                        <th scope="row" class="readBtn" >
+                                            <a class="link-dark " th:text="${product.productName}" th:href="@{'/product/modify/' + ${product.pno}}" style="text-decoration: none"></a>
+                                        </th>
+                                        <th scope="row">[[${product.writer}]]</th>
+                                        <th scope="row">[[${product.seller}]]</th>
+                                        <th scope="row">[[${product.publish}]]</th>
+                                        <th scope="row">[[${product.productPrice}]]</th>
+                                        <th scope="row" >[[${#temporals.format(product.regidate, 'yyyy-MM-dd')}]]</th>
+                                    </tr>
+
+                                    </tbody>
+                                </table>
+
+                            </th:block>
+                        </div>
+
+                   
+                   
+                   
+                   
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary regiBtn">등록</button>
                     <button type="button" class="btn btn-outline-secondary updBtn">수정</button>
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">취소</button>
+                    <button type="button" class="btn btn-outline-secondary cancelBtn" data-bs-dismiss="modal">취소</button>
                 </div>
             </div>
         </div>
@@ -79,19 +121,25 @@
         let modal = $("#new-modal"); // 모달 전체
         let listGroup = $(".list-group-item");
         let modalTitle = $(".modal-title"); //모달 제목
+        let modaldialog = $(".modal-dialog-centered");
 
         let addBtn = $(".addBtn"); // 추가 버튼
         let managBtn = $(".managBtn"); // 관리 버튼
         let modiBtn = $(".modiBtn"); // 수정 버튼
         let removBtn = $(".removBtn"); // 삭제 버튼
+        let cancelBtn = $(".cancelBtn"); // 취소 버튼(닫기)
 
         let regiBtn = $(".regiBtn"); // 등록 실행 버튼
         let updBtn = $(".updBtn"); // 수정 실행 버튼
+
+        let managediv = $(".manage"); // 관리창
+        let label = $(".form-label"); //카테고리 이름 라벨창
 
         let categoryName = $("#categoryName") // input창
         let categoryName1 = $("#categoryName1") // hidden input창 수정할 때 사용
 
         categoryName.val("");
+        managediv.hide();
 
         //처음에는 숨겨져 있다가 마우스를 올리면
         // 해당 행의 버튼만 보이도록
@@ -112,14 +160,51 @@
         //스토리보드를 참조하여 각 텍스트에 맞는 형태로 모달창을 띄우고
         //해당 기능에 알맞은 기능을 적용하기
 
+        //관리 버튼을 눌렀을 때
+        managBtn.on("click", function () {
+            console.log($(this).text())
+
+            if ($(this).text() == "관리"){
+                categoryName.hide();
+                managediv.show();
+                modaldialog.addClass('modal-lg');
+
+                modalTitle.empty();
+                let categoryinfo = $(this).closest(".list-group-item");
+                let cname = categoryinfo.find(".infoName").val();
+
+                console.log(cname);
+                modalTitle.append(cname + " 카테고리 관리");
+
+                label.hide();
+
+                regiBtn.hide();
+                updBtn.hide();
+                cancelBtn.empty();
+                cancelBtn.append("닫기");
+            }
+
+        })
+
         //추가 버튼을 눌렀을 때
         addBtn.on("click", function () {
             console.log(addBtn.text()) //버튼 text 가져오기
 
             if (addBtn.text() == "추가"){
+                modaldialog.removeClass('modal-lg');
+
                 regiBtn.show();
                 updBtn.hide();
+                managediv.hide();
+                categoryName.show();
                 categoryName.val("");
+
+                label.show();
+                modalTitle.empty();
+                modalTitle.append("카테고리 관리");
+
+                cancelBtn.empty();
+                cancelBtn.append("취소");
             }
         })
 
@@ -157,8 +242,20 @@
             console.log($(this).text()) //버튼 text 가져오기
 
             if ($(this).text() == "수정"){
+                modaldialog.removeClass('modal-lg');
+
                 regiBtn.hide();
+                managediv.hide();
+                categoryName.show();
                 updBtn.show();
+
+                label.show();
+                modalTitle.empty();
+                modalTitle.append("카테고리 관리");
+
+                cancelBtn.empty();
+                cancelBtn.append("취소");
+
                 let selectC = $(this).closest('li.list-group-item'); // 선택한 카테고리 이름
                 categoryName.val(selectC.find('div:first-child div').text().trim())
                 categoryName1.val(selectC.find('div:first-child div').text().trim())
