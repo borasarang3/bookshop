@@ -68,8 +68,11 @@
                                     [[${dto.writer}]] | [[${dto.publish}]] | [[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]] <br>
                                     [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
 
-                                <button type="button" class="btn btn-outline-primary fw-bold">장바구니</button>
-                                <button type="button" class="btn btn-primary fw-bold">바로구매</button>
+                                <th:block th:classappend="${dto.itemSellStatus.name() == 'SOLD_OUT'} ? 'disabled' : ''">
+                                    <button type="button" class="btn btn-outline-primary fw-bold" onclick="addCart()">장바구니</button>
+                                    <button type="button" class="btn btn-primary fw-bold" onclick="order()">바로구매</button>
+                                </th:block>
+
                             </div>
                         </div>
                     </th:block>
@@ -120,6 +123,16 @@
             "&searchQuery=" + searchQuery;
     }
 
+    function addCart(){
+        console.log(1)
+
+        var pno = [[${pno}]]
+
+    }
+
+    function order(){
+        console.log(2)
+    }
 
 
     $(document).ready(function () {

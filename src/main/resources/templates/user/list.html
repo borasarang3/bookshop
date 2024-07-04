@@ -10,7 +10,7 @@
 
 <div layout:fragment="content">
 
-    <div class="h1 fw-bold text-center">회원 목록</div>
+    <div class="h1 fw-bold text-center border-bottom border-3 border-black w-50 p-3">회원 목록</div>
 
 
         <table class="table table-bordered text-center">
@@ -67,8 +67,9 @@
             let find = e.target.innerText
 
             console.log(find)
-            let inp =  `<input class="ss" name="userId" value="${find}">`
-            formBs.innerHTML =  inp;
+            let inp = `<input class="ss" name="userId" value="${find}">`
+            console.log(inp);
+            formBs.innerHTML = inp;
 
             formBs.action = `/user/findUser`;
             formBs.method = "post";

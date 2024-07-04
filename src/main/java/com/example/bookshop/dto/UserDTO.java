@@ -39,6 +39,7 @@ public class UserDTO {
     @Email
     private String email; //이메일
 
+
     private String address; //주소
 
     private Role role; //권한

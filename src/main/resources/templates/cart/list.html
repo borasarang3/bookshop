@@ -10,7 +10,54 @@
 
 <div layout:fragment="content">
 
-    <h1>장바구니</h1>
+    <h1 class="fw-bold">장바구니</h1>
+
+    <table class="table table-bordered border-primary mb-4">
+        <thead class="table-primary table-bordered border-primary">
+        <tr class="text-center">
+            <th scope="col">
+                <input type="checkbox" id="checkall">
+            </th>
+            <th scope="col">상품명</th>
+            <th scope="col">가격</th>
+            <th scope="col">수량</th>
+        </tr>
+        </thead>
+        <tbody class="table-group-divider border-primary">
+        <tr class="text-center">
+            <td style="vertical-align: middle">
+                <input type="checkbox" name="cartChkBox">
+            </td>
+            <td style="vertical-align: middle">
+                <img src="http://via.placeholder.com/100">
+                상품명들어감
+            </td>
+            <td style="vertical-align: middle">
+                <span class="col text-center fw-bold"> 10000원
+                </span>
+            </td>
+            <td style="vertical-align: middle">
+                <input class="col text-center" type="number" min="1" max="999" value="1">
+                <button type="button" class="close border border-1" aria-label="Close">
+                    <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                    <!--x를 눌렀을 때 작동할 함수-->
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <hr class="mb-4">
+
+    <h1 class="text-center mb-4">총 결제 금액 :
+        <span id = "orderTotalPrice" class="text-primary fw-bold"> <!-- 총계산금액 구하기 함수-->
+            0원
+        </span>
+    </h1>
+
+    <div class="d-grid gap-2 d-flex justify-content-sm-center">
+        <button type="button" class="btn btn-primary fw-bold">주문하기</button>
+    </div>
 
 </div>
 
