@@ -138,7 +138,7 @@ public class CartService {
     }
 
     //장바구니에서 준 id를 통해서 주문을 하고, 카트를 비운다.
-    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String userId){
+    public List<OrdersDTO> orderCartItem(List<CartOrderDTO> cartOrderDTOList, String userId){
 
         List<OrdersDTO> orderDTOList = new ArrayList<>();
 
@@ -159,7 +159,7 @@ public class CartService {
 
         }
 
-        Long orderId = ordersService.order(orderDTOList, userId); //주문테이블에 저장
+        // Long orderId = ordersService.order(orderDTOList, userId); //주문테이블에 저장
 
         //카트 삭제
 
@@ -171,7 +171,7 @@ public class CartService {
             cartItemRepository.delete(item);
         }
 
-        return orderId;
+        return orderDTOList;
 
 
     }

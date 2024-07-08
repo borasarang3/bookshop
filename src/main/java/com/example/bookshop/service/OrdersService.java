@@ -1,10 +1,9 @@
 package com.example.bookshop.service;
 
 import com.example.bookshop.dto.OrdersDTO;
-import com.example.bookshop.entity.Orders;
-import com.example.bookshop.entity.OrdersItem;
-import com.example.bookshop.entity.Product;
-import com.example.bookshop.entity.UserMember;
+import com.example.bookshop.dto.OrdersHistDTO;
+import com.example.bookshop.dto.OrdersItemDTO;
+import com.example.bookshop.entity.*;
 import com.example.bookshop.repository.ImageRepository;
 import com.example.bookshop.repository.OrdersRepository;
 import com.example.bookshop.repository.ProductRepository;
@@ -13,8 +12,12 @@ import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +90,111 @@ public class OrdersService {
         return orders.getOrdersId();
 
 
+
+    }
+
+    //주문 목록
+    @Transactional(readOnly = true) //읽기만 entity 수정 안되도록
+    public Page<OrdersHistDTO> getOrdersList(String userId, Pageable pageable) {
+
+        List<Orders> ordersList = ordersRepository.findOrders(userId, pageable);
+        Long totalCount = ordersRepository.countOrder(userId);
+
+        List<OrdersHistDTO> ordersHistDTOList = new ArrayList<>();
+
+        for (Orders orders : ordersList){
+            OrdersHistDTO ordersHistDTO = new OrdersHistDTO(orders);
+
+            List<OrdersItem> ordersItemList = orders.getOrdersItems();
+
+            for (OrdersItem ordersItem : ordersItemList){
+                // orders에는 아이템의 이미지가 없기에
+                // 아이템의 아이디를 통해, 대표이미지인 거 찾기
+                Image image = imageRepository
+                        .findByProductPnoAndRepimgYn(ordersItem.getProduct().getPno(), "Y");
+
+                OrdersItemDTO ordersItemDTO
+                        = new OrdersItemDTO(ordersItem, image.getImgUrl());
+
+                ordersHistDTO.addOrdersItemDTO(ordersItemDTO);
+
+            }
+
+            ordersHistDTOList.add(ordersHistDTO);
+
+        }
+
+        return new PageImpl<OrdersHistDTO>(ordersHistDTOList, pageable, totalCount);
+
+    }
+
+    //주문 목록
+    @Transactional(readOnly = true) //읽기만 entity 수정 안되도록
+    public Page<OrdersHistDTO> getOrderList(String userId, Pageable pageable) {
+
+        List<Orders> ordersList = ordersRepository.findOrders(userId, pageable);
+        // 입력받은 유저아이디와 pageable로 주문 목록을 받아온다.
+        // 페이징처리를 위한 전체 목록수를 받아온다.
+        Long totalCount = ordersRepository.countOrder(userId);
+
+        //주문 목록을 리스트로 만들기 위해 list 생성
+        List<OrdersHistDTO> ordersHistDTOList = new ArrayList<>();
+
+        //받아온 Order 객체 안에는
+        for (Orders orders : ordersList){
+            //order를 DTO로 변경
+            OrdersHistDTO ordersHistDTO = new OrdersHistDTO(orders);
+
+            //item들이 있고 그 아이템들을
+            List<OrdersItem> ordersItemList = orders.getOrdersItems();
+
+            for (OrdersItem ordersItem : ordersItemList){
+                // order에는 아이템의 이미지가 없기에
+                // 아이템의 아이디를 통해, 대표이미지인 거 찾기
+                Image image = imageRepository
+                        .findByProductPnoAndRepimgYn(ordersItem.getProduct().getPno(), "Y");
+
+                OrdersItemDTO ordersItemDTO
+                        = new OrdersItemDTO(ordersItem, image.getImgUrl());
+
+                //만들어진 orderItemDTO로 orderHistDTO를 만들고
+                ordersHistDTO.addOrdersItemDTO(ordersItemDTO);
+
+            }
+            //만들어진 orderHistDTO로 orderHistDTOList를 만들고
+            ordersHistDTOList.add(ordersHistDTO);
+
+        }
+
+        return new PageImpl<OrdersHistDTO>(ordersHistDTOList, pageable, totalCount);
+
+    }
+
+    //주인 확인
+    @Transactional(readOnly = true)
+    public boolean validateOrder(Long orderId, String userId) {
+        //로그인한 사람의 아이디로 찾은 유저
+        UserMember userMember = userRepository.findByUserId(userId);
+        //상품이 참조하고 있는 유저와
+        Orders orders = ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+        UserMember savedMember = orders.getUserMember();
+
+        //로그인한 사람과 주문한 사람이 같지 않다면 false
+        if (!StringUtils.equals(userMember.getUserId(), savedMember.getUserId())){
+            return false;
+        }
+
+        //같다면 true
+        return true;
+
+    }
+
+    public void cancelOrder(Long orderId) {
+
+        Orders orders = ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+
+        orders.cancelOrder();
 
     }
 

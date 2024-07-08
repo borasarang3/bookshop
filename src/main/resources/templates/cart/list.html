@@ -12,34 +12,43 @@
 
     <h1 class="fw-bold">장바구니</h1>
 
+    <div class="h3 text-center mt-5" th:if="${#lists.size(cartDetailDTOList) == 0}">장바구니에 담긴 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.size(cartDetailDTOList) == 0}">
     <table class="table table-bordered border-primary mb-4">
         <thead class="table-primary table-bordered border-primary">
         <tr class="text-center">
             <th scope="col">
-                <input type="checkbox" id="checkall">
+                <input type="checkbox" id="checkall" checked>
             </th>
             <th scope="col">상품명</th>
             <th scope="col">가격</th>
             <th scope="col">수량</th>
         </tr>
         </thead>
-        <tbody class="table-group-divider border-primary">
+
+        <tbody class="table-group-divider border-primary" th:each="cartItem : ${cartDetailDTOList}">
         <tr class="text-center">
             <td style="vertical-align: middle">
-                <input type="checkbox" name="cartChkBox">
+                <input type="checkbox" class="cartChkBox" name="cartChkBox" th:value="${cartItem.cartItemId}" checked>
             </td>
             <td style="vertical-align: middle">
-                <img src="http://via.placeholder.com/100">
-                상품명들어감
+                <a th:href="'/product/read/' + ${cartItem.pno}" style="text-decoration: none">
+                <img th:src="${cartItem.imgUrl}" width="100px" height="100px" th:alt="${cartItem.productName}">
+                </a>
+                <div class="mt-2 fw-bold" style="text-decoration: none">[[${cartItem.productName}]]</div>
             </td>
             <td style="vertical-align: middle">
-                <span class="col text-center fw-bold"> 10000원
+                <span class="col text-center fw-bold"
+                th:id="'price_' + ${cartItem.cartItemId}"
+                th:data-price="${cartItem.productPrice}"
+                th:text="${cartItem.productPrice} + '원'"> 10000원
                 </span>
             </td>
             <td style="vertical-align: middle">
-                <input class="col text-center" type="number" min="1" max="999" value="1">
+                <input class="col text-center count" type="number" min="1" max="999" value="1"
+                th:id="'count_' + ${cartItem.cartItemId}" th:value="${cartItem.count}">
                 <button type="button" class="close border border-1" aria-label="Close">
-                    <span aria-hidden="true"><i class="fa-solid fa-xmark"></i></span>
+                    <span aria-hidden="true" th:data-id="${cartItem.cartItemId}"><i class="fa-solid fa-xmark"></i></span>
                     <!--x를 눌렀을 때 작동할 함수-->
                 </button>
             </td>
@@ -58,8 +67,186 @@
     <div class="d-grid gap-2 d-flex justify-content-sm-center">
         <button type="button" class="btn btn-primary fw-bold">주문하기</button>
     </div>
-
+    </th:block>
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function (){
+
+        getOrderTotalPrice();
+
+        let productImg = $(".productImg");
+
+        //이미지 클릭시 상품 상세보기 진행
+        // productImg.on("click", function (e) {
+        //     // alert("실행")
+        //     e.preventDefault();
+        //     e.stopPropagation();
+        //
+        //     let img = $(this).find("img");
+        //
+        //     console.log(img.val())
+        //
+        //
+        //     //location.href = '/product/read/' + pnoInput.val();
+        // })
+
+
+        //전체 선택
+        $("#checkall").on("click", function () {
+            if ($("#checkall").prop("checked")){//클릭되어 있다면
+                //alert("체크됨")
+                $("input[name=cartChkBox]").prop("checked", true)
+                getOrderTotalPrice();
+            } else {//클릭되어있지 않다면
+                //alert("체크해제")
+                $("input[name=cartChkBox]").prop("checked", false)
+                getOrderTotalPrice();
+            }
+        })
+
+        //체크박스
+        $("input[name=cartChkBox]").change(function () {
+            //체크박스가 바뀌었을 때
+            getOrderTotalPrice();
+        })
+
+        //체크박스가 눌렸을 때 총금액 합산
+        function getOrderTotalPrice() {
+            let orderTotalPrice = 0;
+            //console.log("확인")
+            $("input[name=cartChkBox]:checked").each(function () {
+                let cartItemId = $(this).val();
+                //console.log(cartItemId)
+                let price = $("#price_" + cartItemId).attr("data-price");
+                let count = $("#count_" + cartItemId).val()
+                orderTotalPrice += price * count;
+            })
+            $("#orderTotalPrice").text(orderTotalPrice + "원")
+
+        }
+
+        //수량 조절시 가격 변환
+        $(".count").on("change", function () {
+            let count = $(this).val();
+            //console.log(count);
+            let cartItemId = $(this).attr("id").split("_")[1];
+            //console.log(cartItemId);
+            getOrderTotalPrice();
+            updateCartItemCount(cartItemId, count);
+        });
+
+        function updateCartItemCount(cartItemId, count) {
+            //수량이 변경될 때 실행할 함수
+            //controller에 카트상품 id와 수량을 파라미터로 넘기고,
+            //그 두 파라미터를 통해서 데이터에 반영
+            let url = "/cart/update/" + cartItemId + "?count=" + count;
+
+            $.ajax({
+                url : url,
+                type : "put",
+                dataType : "json",
+                success : function (result) {
+                    console.log("상품 수량이 변경되었습니다.")
+                },
+                error : function (result) {
+                    if (result.status == '401'){
+                        alert("로그인 후 이용해주세요")
+                        location.href= "/login"
+                    } else {
+                        alert(result.responseText)
+                        alert("에러 코드 " + result.status)
+                    }
+                }
+            })
+        }
+
+        //장바구니 삭제
+        $(".close").on("click", function () {
+            let a = $(this).find('span:eq(0)')
+            deleteCartItem(a)
+        })
+
+        function deleteCartItem(obj) {
+            console.log(obj.data("id"))
+            let cartItemId = obj.data("id");
+            let url = "/cart/remove/" + cartItemId;
+
+            $.ajax({
+                url : url,
+                type : "delete",
+                dataType : "json",
+                success : function (result) {
+                    alert(result + "를 장바구니에서 삭제했습니다.")
+                    location.href = '/cart/list';
+                },
+                error : function (result) {
+                    if (result.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else if (result.status == '200'){
+                        alert(result.responseText + "를 장바구니에서 제거했습니다.");
+                        location.href = '/cart/list';
+                    } else {
+                        alert("확인 요망 : " + result.responseText)
+                        alert("확인 요망 : " + result.status)
+                    }
+                }
+            })
+
+        }
+
+
+        //장바구니 목록에서 주문으로 넘기기
+        //바로 주문 완료가 아니라 주문 확인 페이지로 넘김
+        $(".btn").on("click", function (){
+            orders();
+        })
+
+
+        function orders() {
+            let dataList = new Array();
+            let paramData = new Object();
+
+            $("input[name=cartChkBox]:checked").each(function () {
+
+                let cartItemId = $(this).val()
+                let data = new Object();
+
+                data["cartItemId"] = cartItemId;
+                dataList.push(data);
+            })
+            paramData['cartOrderDTOList'] = dataList;
+
+            $.ajax({
+                url: "/cart/orders",
+                type: "post",
+                data: JSON.stringify(paramData),
+                contentType: "application/json; charset-8",
+                dataType: "json",
+                success: function (result, status) {
+                    location.href = "/orders"
+                },
+                error: function (result, status, error) {
+                    if (result.status == '401') {
+                        alert("로그인 후 이용해주세요")
+                        location.href = "/members/login"
+                    } else {
+                        alert(result.responseText)
+                    }
+                }
+            })
+
+        }
+
+    })
+
+
+
+
+
+</script>
 
 </body>
 </html>

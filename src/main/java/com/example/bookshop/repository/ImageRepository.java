@@ -10,5 +10,7 @@ public interface ImageRepository extends JpaRepository<Image, Long> {
 
     List<Image> findByProduct (Product product);
 
+    Image findByProductPnoAndRepimgYn(Long pno, String repimgYn);
+
 
 }

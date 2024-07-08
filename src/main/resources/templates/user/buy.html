@@ -12,6 +12,28 @@
 
     <h1>구매 이력 확인</h1>
 
+<!--    <div class="h1 fw-bold text-center">-->
+<!--        <div th:if="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 회원님의 구매 이력</div>-->
+<!--        <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 구매 이력</div>-->
+<!--    </div>-->
+
+    <div class="h3 text-center mt-5" >구매한 상품이 없습니다.</div>
+        <table class="table table-bordered text-center" >
+            <thead>
+            <tr class="table-dark">
+                <th scope="col">상품등록일</th>
+                <th scope="col">상품 이름</th>
+                <th scope="col">글쓴이</th>
+                <th scope="col">출판사</th>
+                <th scope="col">가격</th>
+                <th scope="col">리뷰 개수</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+
 
 </div>
 

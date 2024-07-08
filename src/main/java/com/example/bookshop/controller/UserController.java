@@ -317,12 +317,15 @@ public class UserController {
     }
 
     //구매 이력 확인
-    @GetMapping("/buy")
-    public void userBuy(Model model) {
+    @GetMapping("/mybuy")
+    public String userBuy(Model model) {
         //post 접근 불가로 get 변경해둠
 
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        return "/user/buy";
+
     }
 
     //등록한 상품 확인
@@ -361,7 +364,7 @@ public class UserController {
     }
 
     //작성한 리뷰 확인
-    @GetMapping("/review")
+    @GetMapping("/myreview")
     public void userReview(Model model) {
         //post 접근 불가로 get 변경해둠
 

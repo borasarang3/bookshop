@@ -1,9 +1,6 @@
 package com.example.bookshop.controller;
 
-import com.example.bookshop.dto.CartDetailDTO;
-import com.example.bookshop.dto.CartItemDTO;
-import com.example.bookshop.dto.CartOrderDTO;
-import com.example.bookshop.dto.CategoryDTO;
+import com.example.bookshop.dto.*;
 import com.example.bookshop.service.CartService;
 import com.example.bookshop.service.CategoryService;
 import jakarta.validation.Valid;
@@ -50,6 +47,8 @@ public class CartController {
     public @ResponseBody ResponseEntity cartPlus(
             @RequestBody @Valid CartItemDTO cartItemDTO,
             BindingResult bindingResult, Principal principal){
+
+        log.info(cartItemDTO);
 
         if (principal == null){
             return new ResponseEntity<String>("로그인시 이용 가능한 기능입니다.", HttpStatus.UNAUTHORIZED);
@@ -144,9 +143,10 @@ public class CartController {
     }
 
     //장바구니 > 주문 넘어가기
-    @PostMapping("/cart/orders")
+    @PostMapping("/orders")
     public @ResponseBody ResponseEntity orderCartItem(
-            @RequestBody CartOrderDTO cartOrderDTO, Principal principal) {
+            @RequestBody CartOrderDTO cartOrderDTO,
+            BindingResult bindingResult, Principal principal) {
 
         log.info("cartOrderDTO : " + cartOrderDTO);
 
@@ -163,8 +163,13 @@ public class CartController {
             }
         }
 
-        return new ResponseEntity<Long>
+        return new ResponseEntity<List<OrdersDTO>>
                 (cartService.orderCartItem(cartOrderDTOList, principal.getName()), HttpStatus.OK);
+
+
+
+
+
 
     }
 

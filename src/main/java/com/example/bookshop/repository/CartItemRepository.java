@@ -16,7 +16,7 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     // 장바구니 페이지에 전달할 CartDetailDTO 리스트를 쿼리 하나로 조회하는 jpQL문
     // Long CartItemId, String itemNm, int price, int count, String imgUrl
 
-    @Query("select new com.example.bookshop.dto.CartDetailDTO(ci.cartItemId, p.productName, p.productPrice, ci.orderCount, im.imgUrl) " +
+    @Query("select new com.example.bookshop.dto.CartDetailDTO(ci.cartItemId, p.pno, p.productName, p.productPrice, ci.orderCount, im.imgUrl) " +
             "from CartItem ci , Image im join ci.product p " +
             "where ci.cart.cartId = :cartId and im.product.pno = ci.product.pno " +
             "and im.repimgYn = 'Y' order by ci.regidate desc")

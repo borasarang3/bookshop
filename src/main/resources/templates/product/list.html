@@ -50,8 +50,8 @@
             <div class="card mb-4 mx-auto p-2" style="max-width: 540px; border: none">
                 <div class="row g-0 my-3" th:each="dto: ${products}">
                     <th:block >
-                        <input class="pno" type="hidden" th:value="${dto.pno}" readonly>
-                        <input class="pno" type="hidden" th:value="${dto.categoryid}" readonly>
+                        <input class="pno" id="pno" type="hidden" th:value="${dto.pno}" readonly>
+                        <input class="categoryid" type="hidden" th:value="${dto.categoryid}" readonly>
                         <div class="col-md-4">
                             <!--이미지 넣는 구역-->
                             <a class="productImg" href="#" >
@@ -69,8 +69,10 @@
                                     [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
 
                                 <th:block th:classappend="${dto.itemSellStatus.name() == 'SOLD_OUT'} ? 'disabled' : ''">
-                                    <button type="button" class="btn btn-outline-primary fw-bold" onclick="addCart()">장바구니</button>
-                                    <button type="button" class="btn btn-primary fw-bold" onclick="order()">바로구매</button>
+                                    <button type="button" class="btn btn-outline-primary fw-bold addCart" th:value="${dto.pno}" onclick="addCart($(this))">장바구니</button>
+                                    <input type="hidden" name="count" id="count" value="1" min="1" aria-label="First name" class="form-control count">
+
+                                    <button type="button" class="btn btn-primary fw-bold" th:value="${dto.pno}" onclick="order($(this))">바로구매</button>
                                 </th:block>
 
                             </div>
@@ -123,10 +125,39 @@
             "&searchQuery=" + searchQuery;
     }
 
-    function addCart(){
-        console.log(1)
 
-        var pno = [[${pno}]]
+
+    //장바구니를 클릭했을 때 사용
+    function addCart(btn){
+        var row = btn.closest(".row");
+        var pno = row.find(".pno");
+       var count = row.find(".count").val();
+         //var pno = [[${pno}]] //현재 리스트에 pno가 한 개가 아니라 안 됨
+        // console.log(btn)
+        // console.log(row.val())
+        // console.log(pno.val())
+        // console.log(count.val())
+
+        var param = { pno : pno.val(), count : count};
+        console.log(param)
+        $.ajax({
+            url : "/cart/plus",
+            type : "post",
+            contentType : "application/json; charset=utf-8",
+            data : JSON.stringify(param),
+            dataType : "json",
+            success : function (result){
+                alert("상품을 장바구니에 담았습니다.");
+            },
+            error : function (result, status, error){
+
+                if (result.status == '401'){
+                    alert('로그인 후 이용해주세요');
+                    location.href = '/login';
+                }
+
+            }
+        })
 
     }
 
@@ -168,6 +199,20 @@
             page(0);
         })
 
+
+        /*버튼클릭시*/
+        // $(".addCart").on("click",function () {
+        //     var row = $(this).closest(".row");
+        //     var pno = row.find(".pno");
+        //
+        //     console.log(pno.val())
+        //
+        //     var count = $(".count").val();
+        //     console.log(count)
+        //
+        //     var param = { pno : pno, count : count};
+        //
+        // })
 
 
 
