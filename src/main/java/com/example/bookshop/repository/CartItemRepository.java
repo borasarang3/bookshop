@@ -22,6 +22,12 @@ public interface CartItemRepository extends JpaRepository<CartItem, Long> {
             "and im.repimgYn = 'Y' order by ci.regidate desc")
     List<CartDetailDTO> findCartDetail(Long cartId);
 
+    @Query("select new com.example.bookshop.dto.CartDetailDTO(ci.cartItemId, p.pno, p.productName, p.productPrice, ci.orderCount, im.imgUrl) " +
+            "from CartItem ci , Image im join ci.product p " +
+            "where ci.cartItemId = :cartItemId and im.product.pno = ci.product.pno " +
+            "and im.repimgYn = 'Y' order by ci.regidate desc")
+    List<CartDetailDTO> findCartItemDetail(Long cartItemId);
+
     //CartItem findByCreateBy (String userId);
 
 }

@@ -1,12 +1,8 @@
 package com.example.bookshop.service;
 
 import com.example.bookshop.dto.*;
-import com.example.bookshop.entity.Category;
-import com.example.bookshop.entity.Image;
-import com.example.bookshop.entity.Product;
-import com.example.bookshop.repository.CategoryRepository;
-import com.example.bookshop.repository.ImageRepository;
-import com.example.bookshop.repository.ProductRepository;
+import com.example.bookshop.entity.*;
+import com.example.bookshop.repository.*;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -33,6 +29,64 @@ public class ProductService {
     private final ImageRepository imageRepository;
     private final ImageService imageService;
     private final ModelMapper modelMapper;
+    private final CartItemRepository cartItemRepository;
+
+    public List<ProductDTO> findOrderProduct(Long[] itemid){
+        //나중에 지우기
+        List<Product> productList = new ArrayList<>();
+        List<ProductDTO> productDTOList = new ArrayList<>();
+        for(Long id : itemid){
+            CartItem cartItem = cartItemRepository.findById(id).get();
+            Product product =  productRepository.ororor(cartItem.getProduct().getPno());
+            if(product != null){
+                productList.add(product);
+                productDTOList.add(modelMapper.map(product, ProductDTO.class));
+            }
+        }
+
+        for(Product product : productList) {
+            for (ProductDTO productDTO : productDTOList) {
+
+                    //product와 productDTO의 pno가 같을 때 이미지를 찾아서
+                    //DTO에 set
+                    List<Image> imageList = imageRepository.findByProduct(product);
+
+                    imageList.forEach(image -> log.info(image));
+
+                    List<ImageDTO> imageDTOList = imageList.stream()
+                            .map(image -> modelMapper.map(image, ImageDTO.class))
+                            .collect(Collectors.toList());
+
+                    imageDTOList.forEach(image -> log.info(image));
+
+                    List<Long> inos = new ArrayList<>();
+
+                    for (Image image : imageList) {
+                        for (ImageDTO imageDTO : imageDTOList) {
+                            if (image.getProduct().getPno() == product.getPno()) {
+                                imageDTO.setPno(image.getProduct().getPno());
+
+                                inos.add(imageDTO.getIno());
+
+                            }
+                        }
+                    }
+
+                    imageDTOList.forEach(image -> log.info("최종 imageDTOList : " + image));
+
+                    productDTO.setImageDTOList(imageDTOList);
+                    productDTO.setInos(inos);
+
+
+            }
+        }
+
+        productDTOList.forEach(productDTO -> log.info(productDTO));
+
+        return productDTOList;
+
+
+    }
 
     public ProductDTO register(ProductDTO productDTO,
                                List<MultipartFile> multipartFiles) throws IOException {

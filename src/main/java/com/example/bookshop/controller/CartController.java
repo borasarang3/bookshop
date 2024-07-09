@@ -142,36 +142,39 @@ public class CartController {
 
     }
 
-    //장바구니 > 주문 넘어가기
-    @PostMapping("/orders")
-    public @ResponseBody ResponseEntity orderCartItem(
-            @RequestBody CartOrderDTO cartOrderDTO,
-            BindingResult bindingResult, Principal principal) {
-
-        log.info("cartOrderDTO : " + cartOrderDTO);
-
-        List<CartOrderDTO> cartOrderDTOList = cartOrderDTO.getCartOrderDTOList();
-
-        if (cartOrderDTOList == null || cartOrderDTOList.size() == 0) {
-            //장바구니에서 주문할 카트아이템들을 체크해서 값을 보내지 않았다면
-            return new ResponseEntity<String>("주문할 상품을 선택해주세요.", HttpStatus.FORBIDDEN);
-        }
-
-        for (CartOrderDTO cartOrderDTO1 : cartOrderDTOList) {
-            if (cartService.validateCartItem(cartOrderDTO1.getCartItemId(), principal.getName())) {
-                return new ResponseEntity<String>("주문 권한이 없습니다.",HttpStatus.FORBIDDEN);
-            }
-        }
-
-        return new ResponseEntity<List<OrdersDTO>>
-                (cartService.orderCartItem(cartOrderDTOList, principal.getName()), HttpStatus.OK);
-
-
-
-
-
-
-    }
+    //장바구니 > 주문 넘어가기 //나중에 지우기 안 씀
+//    @PostMapping("/orders")
+//    public @ResponseBody ResponseEntity orderCartItem(
+//            @RequestBody CartOrderDTO cartOrderDTO,
+//            Model model, Principal principal) {
+//
+//        log.info("cartOrderDTO : " + cartOrderDTO);
+//
+//        List<CartOrderDTO> cartOrderDTOList = cartOrderDTO.getCartOrderDTOList();
+//
+//        if (cartOrderDTOList == null || cartOrderDTOList.size() == 0) {
+//            //장바구니에서 주문할 카트아이템들을 체크해서 값을 보내지 않았다면
+//            return new ResponseEntity<String>("주문할 상품을 선택해주세요.", HttpStatus.FORBIDDEN);
+//        }
+//
+//        for (CartOrderDTO cartOrderDTO1 : cartOrderDTOList) {
+//            if (cartService.validateCartItem(cartOrderDTO1.getCartItemId(), principal.getName())) {
+//                return new ResponseEntity<String>("주문 권한이 없습니다.",HttpStatus.FORBIDDEN);
+//            }
+//        }
+//
+//        //List<OrdersDTO> orderDTOList = cartService.orderCartItem(cartOrderDTOList, principal.getName());
+//        //model.addAttribute("orderDTOList", orderDTOList);
+//
+//
+//        return new ResponseEntity<CartOrderDTO>(cartOrderDTO, HttpStatus.OK);
+//
+//
+//
+//
+//
+//
+//    }
 
 
 

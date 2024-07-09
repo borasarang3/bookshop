@@ -12,30 +12,93 @@
 
     <h1>구매 이력 확인</h1>
 
-<!--    <div class="h1 fw-bold text-center">-->
-<!--        <div th:if="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 회원님의 구매 이력</div>-->
-<!--        <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 구매 이력</div>-->
-<!--    </div>-->
+    <div class="h1 fw-bold text-center">
+        <div th:if="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 회원님의 구매 이력</div>
+        <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 구매 이력</div>
+    </div>
 
     <div class="h3 text-center mt-5" >구매한 상품이 없습니다.</div>
-        <table class="table table-bordered text-center" >
+    <th:block></th:block>
+        <table class="table table-bordered text-center">
             <thead>
-            <tr class="table-dark">
-                <th scope="col">상품등록일</th>
+            <tr class="table-primary">
+                <th scope="col">주문일</th>
                 <th scope="col">상품 이름</th>
                 <th scope="col">글쓴이</th>
                 <th scope="col">출판사</th>
-                <th scope="col">가격</th>
-                <th scope="col">리뷰 개수</th>
+                <th scope="col">결제가격</th>
+                <th scope="col">구매수량</th>
+                <th scope="col">주문상태</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody th:each="order: ${ordersHistDTOPage.getContent()}">
+                <th:block th:each="orderItem: ${order.ordersItemDTOList}">
+<!--                <th scope="row" >[[${#temporals.format(order.orderDate, 'yyyy-MM-dd')}]]</th>-->
+                <th scope="row" class="readBtn" >
+                    <a class="link-dark " th:text="${orderItem.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
+                </th>
+                <th scope="row">[[${orderItem.writer}]]</th>
+                <th scope="row">[[${orderItem.publish}]]</th>
+                <th scope="row">[[${orderItem.orderPrice}]]원</th>
+                <th scope="row">[[${orderItem.count}]]권</th>
+                    <th:block th:if="${order.orderStatus.name() == 'ORDER'}">
+                        <button class="btn btn-danger cancelOrder" th:value="${order.orderId}">
+                            주문취소
+                        </button>
+                    </th:block>
+                    <th:block th:unless="${order.orderStatus.name() == 'ORDER'}">
+                        <button class="btn btn-secondary" th:value="${order.orderId}">
+                            (취소완료)
+                        </button>
+                    </th:block>
+                </th:block>
             </tbody>
         </table>
+        <div class="mx-auto p-2"
+         th:with="start=${(ordersHistDTOPage.number/maxPage) * maxPage + 1}, end=${(ordersHistDTOPage.totalPages == 0) ? 1 : (start + (maxPage -1) < ordersHistDTOPage.totalPages ? start + (maxPage - 1) : ordersHistDTOPage.totalPages)}">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-center">
+                <button type="button" class="btn btn-outline-secondary me-3"
+                        th:onclick="'javascript:page(0)'">처음</button>
+                <button type="button" th:classappend="${ordersHistDTOPage.first} ? 'disabled' : ''
+                        "class="btn btn-outline-secondary me-3"
+                        th:onclick="'javascript:page(' + ${ordersHistDTOPage.number - 1} + ')'">이전</button>
+
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${ordersHistDTOPage.number eq page -1} ? 'active' : ''">
+                    <a class="page-link" th:onclick="'javascript:page(' + ${page -1} +')'">[[${page}]]</a>
+                </li>
+
+                <button type="button" class="btn btn-outline-secondary mx-3"
+                        th:classappend="${ordersHistDTOPage.last} ? 'disabled' : ''"
+                        th:onclick="'javascript:page(' + ${ordersHistDTOPage.number + 1} + ')'">다음</button>
+                <button type="button" class="btn btn-outline-secondary"
+                        th:onclick="'javascript:page(' + ${end -1} + ')'">끝</button>
+
+            </ul>
+        </nav>
+    </div>
 
 
 
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    function page(page) {
+
+        location.href= "/user/mybuy/" + page;
+    }
+
+    $(document).ready(function (){
+        const result = [[${result}]]
+
+        if (result){
+            alert(result)
+        }
+    })
+
+
+</script>
 
 </body>
 </html>

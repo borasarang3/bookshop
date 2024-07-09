@@ -12,6 +12,7 @@
 
     <h1 class="fw-bold">장바구니</h1>
 
+    <form action="/orders" method="post">
     <div class="h3 text-center mt-5" th:if="${#lists.size(cartDetailDTOList) == 0}">장바구니에 담긴 상품이 없습니다.</div>
     <th:block th:unless="${#lists.size(cartDetailDTOList) == 0}">
     <table class="table table-bordered border-primary mb-4">
@@ -45,7 +46,7 @@
                 </span>
             </td>
             <td style="vertical-align: middle">
-                <input class="col text-center count" type="number" min="1" max="999" value="1"
+                <input class="col text-center count" type="number" min="1" max="999" value="1" name="count"
                 th:id="'count_' + ${cartItem.cartItemId}" th:value="${cartItem.count}">
                 <button type="button" class="close border border-1" aria-label="Close">
                     <span aria-hidden="true" th:data-id="${cartItem.cartItemId}"><i class="fa-solid fa-xmark"></i></span>
@@ -65,33 +66,24 @@
     </h1>
 
     <div class="d-grid gap-2 d-flex justify-content-sm-center">
-        <button type="button" class="btn btn-primary fw-bold">주문하기</button>
+        <button type="submit" class="btn btn-primary fw-bold">주문하기</button>
     </div>
     </th:block>
+    </form>
+
 </div>
 
 <script layout:fragment="script" th:inline="javascript">
 
+    let error = [[${error}]]
+
+    if (error){
+        alert(error);
+    }
+
     $(document).ready(function (){
 
         getOrderTotalPrice();
-
-        let productImg = $(".productImg");
-
-        //이미지 클릭시 상품 상세보기 진행
-        // productImg.on("click", function (e) {
-        //     // alert("실행")
-        //     e.preventDefault();
-        //     e.stopPropagation();
-        //
-        //     let img = $(this).find("img");
-        //
-        //     console.log(img.val())
-        //
-        //
-        //     //location.href = '/product/read/' + pnoInput.val();
-        // })
-
 
         //전체 선택
         $("#checkall").on("click", function () {
@@ -200,10 +192,6 @@
 
         //장바구니 목록에서 주문으로 넘기기
         //바로 주문 완료가 아니라 주문 확인 페이지로 넘김
-        $(".btn").on("click", function (){
-            orders();
-        })
-
 
         function orders() {
             let dataList = new Array();
@@ -218,25 +206,26 @@
                 dataList.push(data);
             })
             paramData['cartOrderDTOList'] = dataList;
+            console.log(paramData)
 
-            $.ajax({
-                url: "/cart/orders",
-                type: "post",
-                data: JSON.stringify(paramData),
-                contentType: "application/json; charset-8",
-                dataType: "json",
-                success: function (result, status) {
-                    location.href = "/orders"
-                },
-                error: function (result, status, error) {
-                    if (result.status == '401') {
-                        alert("로그인 후 이용해주세요")
-                        location.href = "/members/login"
-                    } else {
-                        alert(result.responseText)
-                    }
-                }
-            })
+            // $.ajax({
+            //     url: "/cart/orders",
+            //     type: "post",
+            //     data: JSON.stringify(paramData),
+            //     contentType: "application/json; charset-8",
+            //     dataType: "json",
+            //     success: function (result, status) {
+            //         location.href = "/orders"
+            //     },
+            //     error: function (result, status, error) {
+            //         if (result.status == '401') {
+            //             alert("로그인 후 이용해주세요")
+            //             location.href = "/members/login"
+            //         } else {
+            //             alert(result.responseText)
+            //         }
+            //     }
+            // })
 
         }
 

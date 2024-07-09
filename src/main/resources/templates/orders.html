@@ -20,19 +20,30 @@
             <th scope="col">수량</th>
         </tr>
         </thead>
-        <tbody class="table-group-divider border-primary">
-        <tr class="text-center">
+        <tbody class="table-group-divider border-primary" th:each="cartItem : ${cartDetailDTOList}">
+        <tr class="text-center item">
+                <input type="checkbox" class="cartChkBox" name="cartChkBox" th:value="${cartItem.cartItemId}" hidden="hidden" checked>
             <td style="vertical-align: middle">
-                <img src="http://via.placeholder.com/100">
-                상품명들어감
+                <input type="hidden" name="pno" th:value="${cartItem.pno}">
+                <a th:href="'/product/read/' + ${cartItem.pno}" style="text-decoration: none">
+                    <img th:src="${cartItem.imgUrl}" width="100px" height="100px" th:alt="${cartItem.productName}">
+                </a>
+                <div class="mt-2 fw-bold" style="text-decoration: none">[[${cartItem.productName}]]</div>
             </td>
             <td style="vertical-align: middle">
-                <span class="col text-center fw-bold"> 10000원
+                <span class="col text-center fw-bold"
+                      th:id="'price_' + ${cartItem.cartItemId}"
+                      th:data-price="${cartItem.productPrice}"
+                      th:text="${cartItem.productPrice} + '원'"> 10000원
                 </span>
+
             </td>
             <td style="vertical-align: middle">
-                <input class="col text-center" type="number" min="1" max="999" value="1"
-                       style="border: none;" readonly>
+                <span class="col text-center fw-bold"
+                      th:id="'count_' + ${cartItem.cartItemId}"
+                      th:data-count="${cartItem.count}"
+                      th:text="${cartItem.count}"></span>
+                <input type="hidden" name="count" th:value="${cartItem.count}">
             </td>
         </tr>
         </tbody>
@@ -47,11 +58,91 @@
     </h1>
 
     <div class="d-grid gap-2 d-flex justify-content-sm-center">
-    <button type="button" class="btn btn-outline-primary fw-bold">구매 취소</button>
-    <button type="button" class="btn btn-primary fw-bold">구매</button>
+    <button type="button" class="btn btn-outline-primary fw-bold cancelBtn">구매 취소</button>
+    <button type="button" class="btn btn-primary fw-bold buyBtn">구매</button>
     </div>
 
+
 </div>
+
+<script layout:fragment="script" th:inline="javascript">
+
+    $(document).ready(function (){
+
+        getOrderTotalPrice();
+
+        //총 결제금액
+        function getOrderTotalPrice() {
+            let orderTotalPrice = 0;
+            //console.log("확인")
+            $("input[name=cartChkBox]:checked").each(function () {
+                let cartItemId = $(this).val();
+                //console.log(cartItemId)
+                let price = $("#price_" + cartItemId).attr("data-price");
+                let count = $("#count_" + cartItemId).attr("data-count");
+
+                console.log(price);
+                console.log(count);
+                orderTotalPrice += price * count;
+            })
+
+            $("#orderTotalPrice").text(orderTotalPrice + "원")
+
+        }
+
+        //이전 페이지로 돌아가기
+        $(".cancelBtn").on("click", function () {
+            history.back();
+        });
+
+        $(".buyBtn").on("click", function () {
+            orders();
+        });
+
+        function orders() {
+            let dataList = new Array();
+            let paramData = new Object();
+
+            $("input[name=cartChkBox]:checked").each(function () {
+
+                let cartItemId = $(this).val()
+                let data = new Object();
+
+                data["cartItemId"] = cartItemId;
+                dataList.push(data);
+            })
+            paramData['cartOrderDTOList'] = dataList;
+            console.log(paramData)
+
+            $.ajax({
+                url: "/orders/buy",
+                type: "post",
+                data: JSON.stringify(paramData),
+                contentType: "application/json; charset-8",
+                dataType: "json",
+                success: function (result, status) {
+                    alert("구매가 완료되었습니다.")
+                    location.href = "/"
+                },
+                error: function (result, status, error) {
+                    if (result.status == '401') {
+                        alert("로그인 후 이용해주세요")
+                        location.href = "/members/login"
+                    } else {
+                        alert(result.responseText)
+                    }
+                }
+            })
+
+        }
+
+
+
+
+    })
+
+
+</script>
 
 </body>
 </html>

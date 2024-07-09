@@ -124,47 +124,7 @@ public class OrdersService {
 
         }
 
-        return new PageImpl<OrdersHistDTO>(ordersHistDTOList, pageable, totalCount);
-
-    }
-
-    //주문 목록
-    @Transactional(readOnly = true) //읽기만 entity 수정 안되도록
-    public Page<OrdersHistDTO> getOrderList(String userId, Pageable pageable) {
-
-        List<Orders> ordersList = ordersRepository.findOrders(userId, pageable);
-        // 입력받은 유저아이디와 pageable로 주문 목록을 받아온다.
-        // 페이징처리를 위한 전체 목록수를 받아온다.
-        Long totalCount = ordersRepository.countOrder(userId);
-
-        //주문 목록을 리스트로 만들기 위해 list 생성
-        List<OrdersHistDTO> ordersHistDTOList = new ArrayList<>();
-
-        //받아온 Order 객체 안에는
-        for (Orders orders : ordersList){
-            //order를 DTO로 변경
-            OrdersHistDTO ordersHistDTO = new OrdersHistDTO(orders);
-
-            //item들이 있고 그 아이템들을
-            List<OrdersItem> ordersItemList = orders.getOrdersItems();
-
-            for (OrdersItem ordersItem : ordersItemList){
-                // order에는 아이템의 이미지가 없기에
-                // 아이템의 아이디를 통해, 대표이미지인 거 찾기
-                Image image = imageRepository
-                        .findByProductPnoAndRepimgYn(ordersItem.getProduct().getPno(), "Y");
-
-                OrdersItemDTO ordersItemDTO
-                        = new OrdersItemDTO(ordersItem, image.getImgUrl());
-
-                //만들어진 orderItemDTO로 orderHistDTO를 만들고
-                ordersHistDTO.addOrdersItemDTO(ordersItemDTO);
-
-            }
-            //만들어진 orderHistDTO로 orderHistDTOList를 만들고
-            ordersHistDTOList.add(ordersHistDTO);
-
-        }
+        ordersHistDTOList.forEach(ordersHistDTO -> log.info(ordersHistDTO));
 
         return new PageImpl<OrdersHistDTO>(ordersHistDTOList, pageable, totalCount);
 

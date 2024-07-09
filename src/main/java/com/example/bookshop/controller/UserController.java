@@ -4,6 +4,7 @@ import com.example.bookshop.constant.Role;
 import com.example.bookshop.dto.*;
 import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.service.CategoryService;
+import com.example.bookshop.service.OrdersService;
 import com.example.bookshop.service.ProductService;
 import com.example.bookshop.service.UserService;
 import jakarta.validation.Valid;
@@ -40,6 +41,7 @@ public class UserController {
     private final PasswordEncoder passwordEncoder;
     private final CategoryService categoryService;
     private final ProductService productService;
+    private final OrdersService ordersService;
 
     //회원가입 페이지
     @GetMapping("/register")
@@ -317,12 +319,25 @@ public class UserController {
     }
 
     //구매 이력 확인
-    @GetMapping("/mybuy")
-    public String userBuy(Model model) {
+    @GetMapping({"/mybuy", "/mybuy/{page}"})
+    public String userBuy(@PathVariable Optional<Integer> page,
+                          Principal principal, Model model) {
         //post 접근 불가로 get 변경해둠
-
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        log.info("현재 로그인 회원 이름 : " + principal.getName());
+        UserDTO loginUser = userService.read(principal.getName());
+        model.addAttribute("loginUser", loginUser);
+
+        Pageable pageable = PageRequest
+                .of(page.isPresent() ? page.get() : 0, 3);
+        Page<OrdersHistDTO> ordersHistDTOPage
+                = ordersService.getOrdersList(principal.getName(), pageable);
+
+        model.addAttribute("ordersHistDTOPage", ordersHistDTOPage);
+        model.addAttribute("page", pageable.getPageNumber());
+        model.addAttribute("maxPage", 5);
 
         return "/user/buy";
 

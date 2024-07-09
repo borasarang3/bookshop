@@ -14,6 +14,7 @@ import com.example.bookshop.repository.ProductRepository;
 import com.example.bookshop.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Log4j2
 public class CartService {
 
     private final ProductRepository productRepository; //장바구니에 넣을 아이템을 찾기 위하여
@@ -31,6 +33,23 @@ public class CartService {
     private final CartRepository cartRepository; //장바구니 저장, 수정 등
     private final CartItemRepository cartItemRepository; //장바구니에 담을 카트 아이템
     private final OrdersService ordersService;
+
+    //선택한 카트 상품 가져오기
+    @Transactional(readOnly = true)
+    public List<CartDetailDTO> findOrder(Long[] cartItemId){
+
+        List<CartDetailDTO> cartDetailDTOList = new ArrayList<>();
+
+        for (Long id : cartItemId) {
+            cartDetailDTOList.addAll(cartItemRepository.findCartItemDetail(id));
+        }
+
+        cartDetailDTOList.forEach(cartDetailDTO -> log.info(cartDetailDTO));
+
+        return cartDetailDTOList;
+
+
+    }
 
     //카트 목록 가져오기
     @Transactional(readOnly = true)
@@ -138,7 +157,7 @@ public class CartService {
     }
 
     //장바구니에서 준 id를 통해서 주문을 하고, 카트를 비운다.
-    public List<OrdersDTO> orderCartItem(List<CartOrderDTO> cartOrderDTOList, String userId){
+    public Long orderCartItem(List<CartOrderDTO> cartOrderDTOList, String userId){
 
         List<OrdersDTO> orderDTOList = new ArrayList<>();
 
@@ -159,11 +178,13 @@ public class CartService {
 
         }
 
-        // Long orderId = ordersService.order(orderDTOList, userId); //주문테이블에 저장
+        Long orderId = ordersService.order(orderDTOList, userId); //주문테이블에 저장
 
-        //카트 삭제
+        //장바구니 내용 삭제
 
         for (CartOrderDTO cartOrderDTO : cartOrderDTOList) {
+            List<CartDetailDTO> cartDetailDTOList = getCartList(userId);
+
             CartItem item = cartItemRepository
                     .findById(cartOrderDTO.getCartItemId())
                     .orElseThrow(EntityNotFoundException::new);
@@ -171,7 +192,7 @@ public class CartService {
             cartItemRepository.delete(item);
         }
 
-        return orderDTOList;
+        return orderId;
 
 
     }
