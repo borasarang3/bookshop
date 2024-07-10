@@ -28,8 +28,8 @@ public class OrdersHistDTO {
         //this.OrderDate = order.getOrderDate(); //String 타입으로 변환을 위해서
                                                 // format 적용
         this.orderDate = orders.getOrderDate()
-                .format(DateTimeFormatter.ofPattern("yyyy-MM--dd HH:mm"));
-                                                    // 2024-06-07 10:30 로 표기
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                                                    // 2024-06-07 10:30:23 로 표기
         this.orderStatus = orders.getOrderStatus();
 
     }

@@ -1,6 +1,7 @@
 package com.example.bookshop.dto;
 
 import com.example.bookshop.entity.OrdersItem;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,7 +17,13 @@ public class OrdersItemDTO {
 
     //생성자로 dto생성 기본생성자 X
 
-    private String productName; //아이템명
+    private Long pno; //상품 아이디
+
+    private String productName; //상품명
+
+    private String writer; //글쓴이
+
+    private String publish; //출판사
 
     private Long count;  //수량
 

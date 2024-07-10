@@ -116,6 +116,10 @@ public class OrdersService {
                 OrdersItemDTO ordersItemDTO
                         = new OrdersItemDTO(ordersItem, image.getImgUrl());
 
+                ordersItemDTO.setPno(ordersItem.getProduct().getPno());
+                ordersItemDTO.setWriter(ordersItem.getProduct().getWriter());
+                ordersItemDTO.setPublish(ordersItem.getProduct().getPublish());
+
                 ordersHistDTO.addOrdersItemDTO(ordersItemDTO);
 
             }
@@ -150,9 +154,9 @@ public class OrdersService {
 
     }
 
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(Long ordersId) {
 
-        Orders orders = ordersRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        Orders orders = ordersRepository.findById(ordersId).orElseThrow(EntityNotFoundException::new);
 
         orders.cancelOrder();
 

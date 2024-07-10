@@ -83,11 +83,26 @@ public class OrdersController {
         //RestController
     }
 
-    @ResponseBody
-    @DeleteMapping("/remove")
-    public String ordersRemove(){
+
+    @DeleteMapping("/remove/{ordersId}")
+    public @ResponseBody String ordersRemove(
+            @PathVariable("ordersId") Long ordersId,
+            Model model,
+            Principal principal){
         //RestController
-        return "/orders";
+
+        String userId = principal.getName(); //로그인한 사용자 이메일
+
+        if ( !ordersService.validateOrder(ordersId, userId)){
+            model.addAttribute("result", "주문 취소 권한이 없습니다.");
+            return "/user/mybuy";
+        }
+
+        ordersService.cancelOrder(ordersId); //주문번호를 이용해서
+        //주문상태를 cancel부터
+        //아이템에 addStockNumber 실행
+
+        return "/user/mybuy";
     }
 
     @PostMapping("/buy")

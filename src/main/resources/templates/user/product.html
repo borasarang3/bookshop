@@ -18,9 +18,9 @@
         <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 등록한 상품</div>
     </div>
 
-    <div class="h3 text-center mt-5" th:if="${#lists.size(products) == 1}">등록한 상품이 없습니다.</div>
-    <th:block th:unless="${#lists.size(products) == 1}">
-        <table class="table table-bordered text-center" th:if="${products.getContent()}">
+    <div class="h3 text-center mt-5" th:if="${#lists.size(products) == 0 || #lists.size(products) == 1 }">등록한 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.size(products) == 0  || #lists.size(products) == 1 }">
+        <table class="table table-bordered text-center mt-5" th:if="${products.getContent()}">
             <thead>
             <tr class="table-dark">
                 <th scope="col">상품등록일</th>
@@ -49,7 +49,7 @@
 
             </tbody>
         </table>
-        <div class="mx-auto p-2"
+        <div class="mx-auto p-2 mt-5"
              th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
             <nav aria-label="Page navigation example">
                 <ul class="pagination justify-content-center">

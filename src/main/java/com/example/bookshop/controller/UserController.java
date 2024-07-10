@@ -335,6 +335,8 @@ public class UserController {
         Page<OrdersHistDTO> ordersHistDTOPage
                 = ordersService.getOrdersList(principal.getName(), pageable);
 
+        log.info("컨트롤러 Hist : " + ordersHistDTOPage);
+
         model.addAttribute("ordersHistDTOPage", ordersHistDTOPage);
         model.addAttribute("page", pageable.getPageNumber());
         model.addAttribute("maxPage", 5);
@@ -380,11 +382,13 @@ public class UserController {
 
     //작성한 리뷰 확인
     @GetMapping("/myreview")
-    public void userReview(Model model) {
+    public String userReview(Model model) {
         //post 접근 불가로 get 변경해둠
 
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        return "/user/review";
     }
 
 
