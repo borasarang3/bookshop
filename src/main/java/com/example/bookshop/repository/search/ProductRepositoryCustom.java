@@ -6,6 +6,8 @@ import com.example.bookshop.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.security.Principal;
+
 public interface ProductRepositoryCustom {
 
     //이미지 없이 product 내용만
@@ -18,6 +20,8 @@ public interface ProductRepositoryCustom {
     Page<MainProductDTO> getMainProductCategoryPage(Long cno, ProductSearchDTO productSearchDTO, Pageable pageable);
 
     //내림차순
+    Page<MainProductDTO> getMainProductPageDescuser(ProductSearchDTO productSearchDTO, Pageable pageable, String userId);
+
     Page<MainProductDTO> getMainProductPageDesc(ProductSearchDTO productSearchDTO, Pageable pageable);
 
 }

@@ -68,12 +68,14 @@
                                     [[${dto.writer}]] | [[${dto.publish}]] | [[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]] <br>
                                     [[${dto.productPrice}]]원 | [[${dto.seller}]] </p>
 
-                                <th:block th:classappend="${dto.itemSellStatus.name() == 'SOLD_OUT'} ? 'disabled' : ''">
-                                    <button type="button" class="btn btn-outline-primary fw-bold addCart" th:value="${dto.pno}" onclick="addCart($(this))">장바구니</button>
+                                    <button type="button" class="btn btn-outline-primary fw-bold addCart" th:value="${dto.pno}"
+                                            th:classappend="${dto.itemSellStatus.name() == 'SOLD_OUT'} ? 'disabled' : ''"
+                                            onclick="addCart($(this))">장바구니</button>
                                     <input type="hidden" name="count" id="count" value="1" min="1" aria-label="First name" class="form-control count">
 
-                                    <button type="button" class="btn btn-primary fw-bold" th:value="${dto.pno}" onclick="order($(this))">바로구매</button>
-                                </th:block>
+                                    <button type="button" class="btn btn-primary fw-bold" th:value="${dto.pno}"
+                                            th:classappend="${dto.itemSellStatus.name() == 'SOLD_OUT'} ? 'disabled' : ''"
+                                            onclick="order($(this))">바로구매</button>
 
                             </div>
                         </div>

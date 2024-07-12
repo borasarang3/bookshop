@@ -24,6 +24,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(
                 (AuthorizeRequests) -> AuthorizeRequests
+                        .requestMatchers("/category/**").hasRole("ADMIN")
                         .requestMatchers("/user/list").hasRole("ADMIN")
                         .requestMatchers("/user/findUser").hasRole("ADMIN")
                         .requestMatchers("/user/register").permitAll()
@@ -34,6 +35,7 @@ public class SecurityConfig {
                         .requestMatchers("/product/read/**").permitAll()
                         .requestMatchers("/product/**").authenticated()
                         .requestMatchers("/orders/**").authenticated()
+                        .requestMatchers("/cart/**").authenticated()
                         .requestMatchers("css/**", "/js/**", "/**").permitAll()
                         .requestMatchers("/**").permitAll()
         )

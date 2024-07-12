@@ -39,7 +39,7 @@
                             <div class="mb-1 row">
                                 <label for="count" class="col-sm-2 col-form-label">수량</label>
                                 <div class="col-5 ">
-                                    <input type="number" name="productAmount" id="count" value="1" min="1"
+                                    <input type="number" name="productAmount" id="count" value="1" min="1" max="999" required
                                            style="width: 80px" class="form-control count">
                                 </div>
                             </div>
@@ -57,13 +57,12 @@
                                 <button type="button" class="btn btn-outline-primary fw-bold" onclick="addCart()">장바구니</button>
                                 <button type="button" class="btn btn-primary fw-bold" onclick="order()">바로구매</button>
                             </div>
-
-                            <div th:if="${productDTO.productAmount == 0}">
-                                <h1>품절</h1>
-                            </div>
-
                         </div>
-
+                        <div th:unless="${productDTO.itemSellStatus.name() == 'SELL'}">
+                        <div th:if="${productDTO.productAmount == 0}" class="d-grid gap-2 col-6">
+                            <button type="button" class="btn btn-secondary fw-bold btn-lg" onclick="addCart()" disabled>품절</button>
+                        </div>
+                        </div>
 
                     </div>
                 </div>
@@ -80,36 +79,103 @@
     <hr class="mb-4">
 
     <h5 class="mb-3">구매 리뷰
-        <button type="button" class="btn btn-primary btn-sm mx-3">리뷰 작성</button>
+        <button type="button" th:if="${userDTO != null}"
+                class="btn btn-primary btn-sm mx-3 regiBtn"
+                data-bs-toggle="modal" data-bs-target="#new-modal">
+            리뷰 작성
+        </button>
     </h5>
 
-
+    <!--리뷰-->
     <div class="card mb-4">
-        <div class="row g-0 ms-3">
-            <h5 class="fw-bold mt-3">리뷰 제목</h5>
-            <p class="card-text mb-3">
-                작성자 | 리뷰 작성일 | 리뷰 수정일 </p>
+        <div class="row g-0 ms-3 reviewlist">
+            <p class="text-center m-3">아직 작성된 리뷰가 없습니다.</p>
+<!--            <h5 class="fw-bold mt-3">리뷰 제목</h5>-->
+<!--            <p class="card-text mb-3">-->
+<!--                작성자 | 리뷰 작성일 | 리뷰 수정일 </p>-->
+<!--            <div class="col-md-4">-->
+<!--                &lt;!&ndash;이미지 넣는 구역&ndash;&gt;-->
+<!--&lt;!&ndash;                <a href="#">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <img src="..." class="img-fluid rounded-start" alt="...">&ndash;&gt;-->
+<!--&lt;!&ndash;                </a>&ndash;&gt;-->
+<!--            </div>-->
+<!--            <div class="col-md-8">-->
+<!--                <div class="card-body">-->
 
-            <div class="col-md-4">
-                <!--이미지 넣는 구역-->
-                <a href="#">
-                    <img src="..." class="img-fluid rounded-start" alt="...">
-                </a>
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
+<!--                    <p>리뷰 내용이 들어가는 칸입니다.</p>-->
 
-                    <p>리뷰 내용이 들어가는 칸입니다.</p>
+<!--                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">-->
+<!--                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold removeBtn">리뷰 삭제</button>-->
+<!--                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold modBtn"-->
+<!--                                data-bs-toggle="modal" data-bs-target="#new-modal">-->
+<!--                            리뷰 수정-->
+<!--                        </button>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold">리뷰 삭제</button>
-                        <button type="button" class="btn btn-outline-primary btn-sm fw-bold">리뷰 수정</button>
-                    </div>
+            <div class="col-12">
+                <div class="dataTables_paginate paging_simple_numbers" id="dataTables-example_paginate">
+                    <ul class="pagination">
+
+                    </ul>
+
                 </div>
             </div>
         </div>
     </div>
+    <!--리뷰-->
 
+    <!--모달-->
+    <div class="modal fade" id="new-modal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">리뷰</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body row g-3">
+                    <div class="col-md-6 reviewer1">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="reviewer">작성자</span>
+                            <input type="text" name="reviewer" class="form-control reviewer" th:value="${userDTO.userName}" placeholder="리뷰 작성자 이름" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6 regidate1">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="regidate">작성일</span>
+                            <input type="text" name="regidate" class="form-control regidate" placeholder="리뷰 작성일" required>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="input-group mb-1">
+                            <span class="input-group-text" id="reviewName">제목</span>
+                            <input type="text" name="reviewName" class="form-control reviewName" placeholder="리뷰 제목을 입력해주세요." required>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="input-group mb-1">
+                            <textarea name="reviewContent" class="form-control reviewContent" rows="3" placeholder="리뷰 내용을 입력해주세요." required></textarea>
+                        </div>
+                    </div>
+                    <!--이미지는 나중에-->
+<!--                    <div class="col-12">-->
+<!--                        <div class="input-group mb-1">-->
+<!--                            <input type="file" name="imgFile" class="form-control" placeholder="이미지 파일을 등록해주세요.(선택)" required>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <input type="text" name="rno" class="rnoinput">
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary saveBtn">작성</button>
+                    <button type="button" class="btn btn-outline-secondary updBtn">수정</button>
+                    <button type="button" class="btn btn-outline-secondary cancelBtn" data-bs-dismiss="modal">취소</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--모달-->
 
 </div>
 
@@ -193,7 +259,203 @@
             total()
         });
 
+        ///////////////// 모달
 
+        let pno = [[${productDTO.pno}]];
+        console.log("pno : " + pno);
+
+        let str = ""; //ul 태그 안에 들어갈 html // 리뷰 리스트를 작성하기 위해서
+        let str2 = ""; //ul 태그 안에 들어갈 html // 리뷰 리스트를 작성하기 위해서
+
+        let reviewlist = $(".reviewlist") //리뷰가 달리는 div태그(카드)
+        let pagination = $(".pagination") //리뷰가 달리는 페이징처리(ul태그)
+
+        let reviewer = $(".reviewer"); //리뷰작성자 인풋
+        let reviewer1 = $(".reviewer1"); //리뷰작성자 div 전체
+        let reviewName = $(".reviewName"); //리뷰이름 인풋
+        let reviewContent = $(".reviewContent"); //리뷰내용 인풋
+        let regidate = $(".regidate"); //리뷰작성일 인풋
+        let regidate1 = $(".regidate1"); //리뷰작성일 div 전체
+
+        let modal = $("#new-modal"); //모달전체
+
+        let regiBtn = $(".regiBtn"); //작성모달버튼
+        let saveBtn = $(".saveBtn"); //작성완료버튼
+
+        let modBtn = $(".modBtn"); //수정모달버튼
+        let updBtn = $(".updBtn"); //수정완료버튼
+
+        let removeBtn = $(".removeBtn"); //삭제버튼
+
+        let thispage = 1; //처음 진입했을 때 리뷰 페이지
+
+        //작성모달버튼을 클릭했을 때
+        regiBtn.on("click", function (){
+            reviewer1.removeClass("col-md-6");
+            reviewer1.addClass("col-12");
+            regidate1.hide();
+            reviewName.val("");
+            reviewContent.val("");
+            $(".rnoinput").val("");
+
+            updBtn.hide();
+            saveBtn.show();
+        })
+
+        //수정모달버튼을 클릭했을 때
+        $(".reviewlist").on("click", ".modBtn", function (e){
+            // if(e.target.classList.contains("modBtn")){
+            //     alert("홍길동")
+            // }
+
+            reviewer1.removeClass("col-12");
+            reviewer1.addClass("col-md-6");
+            regidate1.show();
+
+            //왜 값이 안 들어가~
+
+            let col = $(e.target).closest("col-md-12");
+            console.log(col.find("h5").text())
+            reviewName.val(col.find("h5").text());
+            reviewContent.val("테스트2");
+
+            //let selectC = $(this).closest('li.list-group-item'); // 선택한 카테고리 이름
+            //categoryName.val(selectC.find('div:first-child div').text().trim())
+
+            let rno = $(e.target).data("num");
+            console.log(rno)
+            $(".rnoinput").val(rno);
+
+
+            updBtn.show();
+            saveBtn.hide();
+        })
+
+        //리뷰 작성
+        saveBtn.on("click", function (){
+            console.log(reviewer.val())
+            console.log(reviewName.val())
+            console.log(reviewContent.val())
+
+            let review = {"pno" : pno, "reviewer" : reviewer.val(),
+                "reviewName" : reviewName.val(),
+                "reviewContent" : reviewContent.val()
+            }
+            console.log(review)
+
+            $.ajax({
+                url : "/review/register",
+                type : "post",
+                contentType : "application/json; charset=utf-8",
+                data : JSON.stringify(review),
+                dataType : "json",
+                success : function (result){
+                        alert("리뷰가 등록되었습니다.")
+                        modal.modal("hide");
+                        location.reload();
+                },
+                error : function (result){
+                    if (result.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/login';
+                    } else  if (result.status == '200'){
+                        alert("리뷰가 등록되었습니다.")
+                        modal.modal("hide");
+                        location.reload();
+                    } else {
+                        alert("리뷰를 작성할 수 없는 회원입니다.")
+                        alert("확인 요망 : " + result.responseText)
+                    }
+                }
+            })
+
+        })
+
+        //리뷰 수정
+        updBtn.on("click", function () {
+
+        })
+
+        //목록 불러오기 //html 디자인 손보기
+        let showList = function (page){
+            str = "";
+            str2 = "";
+
+            if (page == null || page=="" || page.length == 0){
+                page = 1;
+            }
+
+
+            $.ajax({
+                url : "/review/list/" + pno +"?page=" + page   ,
+                type : "get",
+
+                dataType : "json",
+                success : function (data){
+                    thispage = data.page
+                    if ( data== null || data.dtoList == null || data.dtoList.length == null  ) {
+                        return null;
+                    } else {
+
+                        for (let i = 0; i < data.dtoList.length; i++) {
+                            str += `<div class="col-md-12"><h5 class="fw-bold mt-3">${data.dtoList[i].reviewName}</h5>
+            <p class="card-text mb-3"> ${data.dtoList[i].reviewer} | ${data.dtoList[i].regidate} 작성 | ${data.dtoList[i].modidate} 수정 </p>
+            <div class="col-md-4"></div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <p>${data.dtoList[i].reviewContent}</p>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="button" data-num="${data.dtoList[i].rno}" class="btn btn-outline-primary btn-sm fw-bold removeBtn">리뷰 삭제</button>
+                        <button type="button" data-num="${data.dtoList[i].rno}" class="btn btn-outline-primary btn-sm fw-bold modBtn"
+                                data-bs-toggle="modal" data-bs-target="#new-modal">
+                            리뷰 수정
+                        </button>
+                    </div>
+                </div>
+            </div> </div>`
+                        }
+                        if (data.prev) {
+                            str2 += `<li class="page-item previous " aria-controls="dataTables-example" tabindex="0" id="dataTables-example_previous">
+                <a class="page-link" data-num="${data.start - 1}">이전</a>
+            </li>`;
+                        }
+                        for (let i = data.start, j = data.end; i <= j; i++) {
+                            str2 += `<li class="page-item ${i == data.page ? 'active' : ''}" aria-controls="dataTables-example" tabIndex="0">
+                    <a class="page-link" data-num="${i}">${i}</a>
+                </li>`;
+
+                        }
+                        if (data.next) {
+                            str2 += `<li class="page-item" aria-controls="dataTables-example" tabindex="0" id="dataTables-example_next">
+                <a class="page-link" data-num="${data.end + 1}">Next</a>
+            </li>`
+                        }}
+                    pagination.html(str2);
+                    reviewlist.html(str);
+                },
+                error : function (result, error){
+                    if (result.status == '401'){
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/login';
+                    } else {
+                        alert("확인 요망 : " + result.responseText)
+                        alert("확인 요망 : " + error.responseText)
+                        alert("확인 요망 : " + error)
+                    }
+                }
+            })
+
+        }
+
+        pagination.on("click", "a", function (e){
+
+            let datanum = $(e.target).data("num")
+
+            showList(datanum)
+
+        })
+
+        showList(1);
 
 
 

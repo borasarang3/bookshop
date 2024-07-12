@@ -22,4 +22,9 @@ public interface OrdersRepository extends JpaRepository<Orders, Long> {
             "where o.userMember.userId = :userId")
     Long countOrder(@Param("userId") String userId);
 
+    //주문 목록 찾기
+    @Query("select o from Orders o where o.userMember.userId = :userId")
+    List<Orders> findByUserMemberUserId(String userId);
+
+
 }

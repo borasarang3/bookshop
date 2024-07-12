@@ -90,10 +90,51 @@
 
         }
 
-        //이전 페이지로 돌아가기
+        //주문을 취소하고 메인 페이지로 돌아가기
         $(".cancelBtn").on("click", function () {
-            history.back();
+            cancelBuy();
+            //history.back();
         });
+
+        function cancelBuy(){
+            let dataList = new Array();
+            let paramData = new Object();
+
+            $("input[name=cartChkBox]:checked").each(function () {
+
+                let cartItemId = $(this).val()
+                let data = new Object();
+
+                data["cartItemId"] = cartItemId;
+                dataList.push(data);
+            })
+            paramData['cartOrderDTOList'] = dataList;
+            console.log(paramData)
+
+            $.ajax({
+                url: "/orders/clear",
+                type: "delete",
+                data: JSON.stringify(paramData),
+                contentType: "application/json; charset-8",
+                dataType: "json",
+                success: function (result, status) {
+                    alert("구매가 취소되었습니다.")
+                    location.href = "/"
+                },
+                error: function (result, status, error) {
+                    if (result.status == '401') {
+                        alert("로그인 후 이용해주세요")
+                        location.href = "/login"
+                    } else if(result.status == '200'){
+                        alert("구매가 취소되었습니다.")
+                        location.href = "/"
+                    }
+                    else {
+                        alert(result.responseText)
+                    }
+                }
+            })
+        }
 
         $(".buyBtn").on("click", function () {
             orders();
@@ -127,7 +168,7 @@
                 error: function (result, status, error) {
                     if (result.status == '401') {
                         alert("로그인 후 이용해주세요")
-                        location.href = "/members/login"
+                        location.href = "/login"
                     } else {
                         alert(result.responseText)
                     }

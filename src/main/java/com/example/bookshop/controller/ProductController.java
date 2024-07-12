@@ -7,6 +7,8 @@ import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.ImageService;
 import com.example.bookshop.service.ProductService;
 import com.example.bookshop.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -80,13 +82,18 @@ public class ProductController {
     }
 
     @GetMapping("/read/{pno}")
-    public String productRead(@PathVariable("pno") Long pno, Model model){
+    public String productRead(@PathVariable("pno") Long pno, Principal principal, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
         ProductDTO productDTO = productService.productRead(pno);
         log.info(productDTO);
         model.addAttribute("productDTO", productDTO);
+
+        if (principal != null){
+            UserDTO userDTO = userService.read(principal.getName());
+            model.addAttribute("userDTO", userDTO);
+        }
 
         return "/product/read";
 
@@ -101,8 +108,10 @@ public class ProductController {
                                 RedirectAttributes redirectAttributes,
                                 Model model){
         //post 접근 불가로 get 변경해둠
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
-        if (principal.getName() == null){
+        if (principal == null){
             log.info("로그인시 이용가능한 서비스입니다.");
             redirectAttributes.addFlashAttribute("result", "로그인시 이용가능한 서비스입니다.");
             return "redirect:/login";
@@ -110,19 +119,14 @@ public class ProductController {
 
         UserDTO userDTO = userService.read(principal.getName());
 
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-
         productDTO.setSeller(userDTO.getUserName());
         productDTO.setItemSellStatus(ItemSellStatus.SELL);
 
         model.addAttribute("productDTO", productDTO);
-        model.addAttribute("categoryList", categoryDTOList);
-
-
-
 
         return "/product/register";
     }
+
     //상품 등록
     @PostMapping("/register")
     public String productRegisterPost(@Valid ProductDTO productDTO,

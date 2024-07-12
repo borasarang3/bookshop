@@ -43,7 +43,7 @@
     <!--캐러셀-->
 
     <!--이미지 카드-->
-    <h3 class="text-center mt-5">새로 들어온 책</h3>
+    <h3 class="text-center mt-5 fw-bold">새로 들어온 책</h3>
     <div class="row row-cols-1 row-cols-md-6 g-4 mt-3"
          th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
         <div class="col">
@@ -60,7 +60,7 @@
             <a th:href="'/product/read/' + ${product.pno}" style="text-decoration: none">
                 <div class="card h-100 text-center border-0">
                     <img th:src="${product.imgUrl}" style="height: 100%" class="card-img-top" alt="${product.productName}">
-                    <div class="card-body">
+                    <div class="card-body text-truncate">
                         <h5 class="card-title" th:text="${product.productName}" style="height: 100%">Card title</h5>
                     </div>
                 </div>

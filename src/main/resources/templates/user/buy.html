@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+f<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layout}">
@@ -15,8 +15,8 @@
         <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 구매 이력</div>
     </div>
 
-    <div class="h3 text-center mt-5" th:if="${#lists.size(ordersHistDTOPage.getContent()) == 0 || #lists.size(ordersHistDTOPage.getContent()) == 1 }" >구매한 상품이 없습니다.</div>
-    <th:block th:unless="${#lists.size(ordersHistDTOPage.getContent()) == 0 || #lists.size(ordersHistDTOPage.getContent()) == 1 }">
+    <div class="h3 text-center mt-5" th:if="${#lists.size(ordersHistDTOPage.getContent()) == 0}" >구매한 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.size(ordersHistDTOPage.getContent()) == 0}">
     <div class="container mt-4 px-4 g-0 card border border-3">
         <div class="col g-0 my-3" th:each="order: ${ordersHistDTOPage.getContent()}">
             <div class="text-center">
@@ -94,6 +94,7 @@
     }
 
     $(document).ready(function (){
+
         const result = [[${result}]]
 
         if (result){

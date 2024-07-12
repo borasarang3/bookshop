@@ -143,6 +143,21 @@ public class CartService {
 
     }
 
+    //모든 장바구니 지우기
+    public void deleteCartordersCancel(List<CartOrderDTO> cartOrderDTOList, String userId){
+
+        for (CartOrderDTO cartOrderDTO : cartOrderDTOList) {
+            List<CartDetailDTO> cartDetailDTOList = getCartList(userId);
+
+            CartItem item = cartItemRepository
+                    .findById(cartOrderDTO.getCartItemId())
+                    .orElseThrow(EntityNotFoundException::new);
+
+            cartItemRepository.delete(item);
+        }
+
+    }
+
     //장바구니에 담긴 상품의 수량 변경
     public void updateCartItemCount(Long cartItemId, Long count){
         //넘겨받은 cartItemId를 통해서 cartItem을 찾아온다

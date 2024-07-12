@@ -41,6 +41,8 @@ public class MainProductDTO {
 
     private String imgUrl; //상품 이미지
 
+    private Long reviewCount; //리뷰 수
+
     //생성자에 @QueryProjection 어노테이션을 선언하여 Querydsl로 결과 조회시
     // MainitemDTO 객체로 바로 받아오도록 활용
     // select * <<entity x >> dto로 바뀐다. from table
@@ -66,6 +68,27 @@ public class MainProductDTO {
 
     }
 
+    @QueryProjection
+    public MainProductDTO(Long pno, String seller, String productName,
+                          String writer, String publish, String productContent,
+                          Long productPrice, Long productAmount, Long categoryid,
+                          ItemSellStatus itemSellStatus, LocalDateTime regidate,
+                          String imgUrl, Long reviewCount){
+        this.pno = pno;
+        this.seller = seller;
+        this.productName = productName;
+        this.writer = writer;
+        this.publish = publish;
+        this.productContent = productContent;
+        this.productPrice = productPrice;
+        this.productAmount = productAmount;
+        this.categoryid = categoryid;
+        this.itemSellStatus = itemSellStatus;
+        this.regidate = regidate;
+        this.imgUrl = imgUrl;
+        this.reviewCount = reviewCount;
+
+    }
 
 
 }

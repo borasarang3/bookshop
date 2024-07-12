@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,8 +32,8 @@ public class ProductService {
     private final ModelMapper modelMapper;
     private final CartItemRepository cartItemRepository;
 
+    //나중에 지우기
     public List<ProductDTO> findOrderProduct(Long[] itemid){
-        //나중에 지우기
         List<Product> productList = new ArrayList<>();
         List<ProductDTO> productDTOList = new ArrayList<>();
         for(Long id : itemid){
@@ -129,8 +130,14 @@ public class ProductService {
     //검색+페이징+이미지 (내림차순 버전)
     @Transactional(readOnly = true)
     public Page<MainProductDTO> getProductImagPageDesc (ProductSearchDTO productSearchDTO,
-                                                    Pageable pageable) {
-        return productRepository.getMainProductPageDesc(productSearchDTO, pageable);
+                                                        Pageable pageable) {
+        return productRepository.getMainProductPageDesc(productSearchDTO, pageable );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MainProductDTO> getProductImagPageDescuser (ProductSearchDTO productSearchDTO,
+                                                        Pageable pageable, String userId) {
+        return productRepository.getMainProductPageDescuser(productSearchDTO, pageable, userId );
     }
 
     //검색+페이징+이미지+카테고리

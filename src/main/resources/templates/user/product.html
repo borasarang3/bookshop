@@ -18,8 +18,8 @@
         <div th:unless="${loginUser.role.name()  == 'USER'}">[[${loginUser.userName}]] 관리자님의 등록한 상품</div>
     </div>
 
-    <div class="h3 text-center mt-5" th:if="${#lists.size(products) == 0 || #lists.size(products) == 1 }">등록한 상품이 없습니다.</div>
-    <th:block th:unless="${#lists.size(products) == 0  || #lists.size(products) == 1 }">
+    <div class="h3 text-center mt-5" th:if="${products.content == null || #lists.isEmpty(products.content)}">등록한 상품이 없습니다.</div>
+    <th:block th:unless="${#lists.isEmpty(products.content)}">
         <table class="table table-bordered text-center mt-5" th:if="${products.getContent()}">
             <thead>
             <tr class="table-dark">
@@ -33,17 +33,17 @@
             </thead>
             <tbody>
 
-            <tr role="row"  th:each="dto: ${products.getContent}">
+            <tr role="row"  th:each="dto: ${products.content}">
                 <th:block th:if="${dto.seller == loginUser.userName}">
-                <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
-                <th scope="row" class="readBtn" >
-                    <a class="link-dark " th:text="${dto.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
-                </th>
-                <th scope="row">[[${dto.writer}]]</th>
-                <th scope="row">[[${dto.publish}]]</th>
-                <th scope="row">[[${dto.productPrice}]]</th>
-                <!--리뷰 구현 후 리뷰 개수 반영하기-->
-                <th scope="row">0</th>
+                    <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
+                    <th scope="row" class="readBtn" >
+                        <a class="link-dark " th:text="${dto.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
+                    </th>
+                    <th scope="row">[[${dto.writer}]]</th>
+                    <th scope="row">[[${dto.publish}]]</th>
+                    <th scope="row">[[${dto.productPrice}]]</th>
+                    <!--리뷰 구현 후 리뷰 개수 반영하기-->
+                    <th scope="row">0</th>
                 </th:block>
             </tr>
 

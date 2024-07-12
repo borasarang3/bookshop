@@ -7,6 +7,8 @@ import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.ProductService;
 import com.example.bookshop.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -36,6 +38,9 @@ public class CategoryController {
                            ProductSearchDTO productSearchDTO, Pageable pageable,
                            RedirectAttributes redirectAttributes){
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         if (principal.getName() == null){
             log.info("로그인시 이용가능한 서비스입니다.");
             redirectAttributes.addFlashAttribute("result", "로그인시 이용가능한 서비스입니다.");
@@ -46,12 +51,9 @@ public class CategoryController {
 
         UserDTO loginUser = userService.read(principal.getName());
 
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
-
         if ( loginUser.getRole().name() == "ADMIN" ){
 
-            model.addAttribute("categoryDTOList",  categoryService.allCategoryList() );
+            model.addAttribute("categoryDTOList", categoryService.allCategoryList() );
             model.addAttribute("products",
                     productService.getProductImagPageDesc(productSearchDTO, pageable));
             model.addAttribute("maxPage", 10);
@@ -61,7 +63,7 @@ public class CategoryController {
 
             redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 
-            return "redirect:/main";
+            return "redirect:/";
 
         }
 

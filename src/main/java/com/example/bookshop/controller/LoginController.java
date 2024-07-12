@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -27,18 +28,21 @@ public class LoginController {
     private final CategoryService categoryService;
 
     @GetMapping("")
-    public String loginGet(Model model){
-
+    public String loginGet(Principal principal, RedirectAttributes redirectAttributes, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
-        return "/login";
+        if (principal != null){
+            redirectAttributes.addFlashAttribute("result", "이미 로그인 되었습니다.");
+            return "redirect:/";
+        } else {
+            return "/login";
+        }
     }
 
     @GetMapping("/error")
     public String loginError(Model model,
                              RedirectAttributes redirectAttributes){
-
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
@@ -47,16 +51,24 @@ public class LoginController {
     }
 
     @GetMapping("/findID")
-    public void findIDGet(Model model){
+    public String findIDGet(Principal principal, RedirectAttributes redirectAttributes, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        if (principal != null){
+            redirectAttributes.addFlashAttribute("result", "이미 로그인 되었습니다.");
+            return "redirect:/";
+        }else {
+
+            return "/login/findID";
+        }
     }
 
     @PostMapping("/findID")
     public String findIDPost(String userName, String email,
                            Model model){
 
-            log.info("받은 이름과 이메일 : " + userName + " / " + email);
+        log.info("받은 이름과 이메일 : " + userName + " / " + email);
 
         UserDTO userDTO = userService.findId(userName, email);
 
@@ -75,9 +87,17 @@ public class LoginController {
     }
 
     @GetMapping("/findPW")
-    public void findPWGet(Model model){
+    public String findPWGet(Principal principal, RedirectAttributes redirectAttributes, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        if (principal != null){
+            redirectAttributes.addFlashAttribute("result", "이미 로그인 되었습니다.");
+            return "redirect:/";
+        }else {
+
+            return "/login/findPW";
+        }
     }
 
     @ResponseBody

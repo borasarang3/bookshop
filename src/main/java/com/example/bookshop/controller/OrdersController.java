@@ -49,7 +49,7 @@ public class OrdersController {
     @PostMapping("")
     public String orders(Long[] cartChkBox,
                        RedirectAttributes redirectAttributes,
-                       Principal principal, Model model){
+                       Principal principal){
 
         log.info("카트에서 가져온 아이템 카트아이템 번호 : " + Arrays.toString(cartChkBox));
 
@@ -72,8 +72,6 @@ public class OrdersController {
 
         cartDetailDTOList.forEach(cartDetailDTO -> log.info( "값 : " + cartDetailDTO));
 
-        model.addAttribute("cartDetailDTOList", cartDetailDTOList);
-
         return "/orders";
     }
 
@@ -81,6 +79,21 @@ public class OrdersController {
     @PutMapping("/modify")
     public void ordersModify(){
         //RestController
+    }
+
+    @DeleteMapping("/clear")
+    public @ResponseBody void ordersClear(@RequestBody CartOrderDTO cartOrderDTO,
+                                          Principal principal){
+
+        //구매 취소할 때 사용
+        log.info(cartOrderDTO);
+
+        log.info("cartOrderDTO : " + cartOrderDTO);
+
+        List<CartOrderDTO> cartOrderDTOList = cartOrderDTO.getCartOrderDTOList();
+
+        cartService.deleteCartordersCancel(cartOrderDTOList, principal.getName());
+
     }
 
 
@@ -91,7 +104,7 @@ public class OrdersController {
             Principal principal){
         //RestController
 
-        String userId = principal.getName(); //로그인한 사용자 이메일
+        String userId = principal.getName(); //로그인한 사용자 아이디
 
         if ( !ordersService.validateOrder(ordersId, userId)){
             model.addAttribute("result", "주문 취소 권한이 없습니다.");
@@ -108,7 +121,7 @@ public class OrdersController {
     @PostMapping("/buy")
     public  @ResponseBody ResponseEntity ordersBuy(
             @RequestBody CartOrderDTO cartOrderDTO,
-            Principal principal, Model model){
+            Principal principal){
 
         log.info(cartOrderDTO);
 

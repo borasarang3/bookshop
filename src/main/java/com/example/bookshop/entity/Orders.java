@@ -59,8 +59,11 @@ public class Orders {
 
         orders.setOrderStatus(OrderStatus.ORDER); //주문상태
         orders.setOrderDate(LocalDateTime.now()); //주문시간
-        orders.setDelivery(userMember.getAddress()); //주소
-
+        if (userMember.getAddress() != null) {
+            orders.setDelivery(userMember.getAddress()); //주소
+        } else {
+            orders.setDelivery("미설정");
+        }
         //그렇게 만들어진 엔티티를 반환한다.
         return orders;
 

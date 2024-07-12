@@ -176,7 +176,7 @@
                 error : function (result) {
                     if (result.status == '401'){
                         alert('로그인 후 이용해주세요');
-                        location.href = '/members/login';
+                        location.href = '/login';
                     } else if (result.status == '200'){
                         alert(result.responseText + "를 장바구니에서 제거했습니다.");
                         location.href = '/cart/list';

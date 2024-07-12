@@ -3,10 +3,7 @@ package com.example.bookshop.controller;
 import com.example.bookshop.constant.Role;
 import com.example.bookshop.dto.*;
 import com.example.bookshop.entity.UserMember;
-import com.example.bookshop.service.CategoryService;
-import com.example.bookshop.service.OrdersService;
-import com.example.bookshop.service.ProductService;
-import com.example.bookshop.service.UserService;
+import com.example.bookshop.service.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -42,35 +39,42 @@ public class UserController {
     private final CategoryService categoryService;
     private final ProductService productService;
     private final OrdersService ordersService;
+    private final ReviewService reviewService;
 
     //회원가입 페이지
     @GetMapping("/register")
-    public String userRegister(Model model){
+    public String userRegister(Principal principal, Model model){
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
+        if (principal != null){
+            return "redirect:/";
+        } else {
         UserDTO userDTO = new UserDTO();
         userDTO.setRole(Role.USER);
 
         model.addAttribute("userDTO", userDTO);
 
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
-
         return "/user/register";
+        }
     }
 
     //어드민용 회원가입 페이지
     @GetMapping("/adminregister")
-    public String adminRegister(Model model){
-
-        UserDTO userDTO = new UserDTO();
-        userDTO.setRole(Role.ADMIN);
-
-        model.addAttribute("userDTO", userDTO);
-
+    public String adminRegister(Principal principal, Model model){
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 
-        return "/user/register";
+        if (principal != null){
+            return "redirect:/";
+        } else {
+            UserDTO userDTO = new UserDTO();
+            userDTO.setRole(Role.ADMIN);
+
+            model.addAttribute("userDTO", userDTO);
+
+            return "/user/register";
+        }
     }
 
     //회원가입
@@ -79,7 +83,6 @@ public class UserController {
                                BindingResult bindingResult,
                                RedirectAttributes redirectAttributes,
                                Model model){
-
         log.info(userDTO);
 
        if (bindingResult.hasErrors()){
@@ -106,7 +109,7 @@ public class UserController {
 
         redirectAttributes.addFlashAttribute("result", "회원가입이 완료되었습니다.");
 
-        return "redirect:/main";
+        return "redirect:/";
     }
 
     //회원정보 상세 확인
@@ -118,12 +121,12 @@ public class UserController {
         // 로그인한 사람의 권한을 찾아와야 함
         // 로그인 한 사람의 이름으로 정보를 찾고 권한 반환 > 비교하기
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         log.info("현재 로그인 회원 이름 : " + principal.getName());
 
         UserDTO loginUser = userService.read(principal.getName());
-
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
 
         //기본
         // 로그인한 사람의 이름으로 정보를 찾아옴
@@ -140,7 +143,7 @@ public class UserController {
 
             redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 
-            return "/main";
+            return "/";
         }
 
 
@@ -154,16 +157,14 @@ public class UserController {
 
         UserDTO loginUser = userService.read(principal.getName());
 
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
-
         if ( loginUser.getRole().name() == "ADMIN" ){
-            return "/user/findUser";
+            return  "/user/read";
+
         } else {
 
             redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 
-            return "redirect:/main";
+            return "redirect:/";
         }
 
 
@@ -173,14 +174,14 @@ public class UserController {
     public String findUser(UserDTO userDTO, Model model,
                            Principal principal, RedirectAttributes redirectAttributes){
 
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
+
         //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 열람 가능
 
         log.info("현재 로그인 회원 이름 : " + principal.getName());
 
         UserDTO loginUser = userService.read(principal.getName());
-
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
 
         //해야 하는 것
         // 회원 목록에서 아이디를 눌렀을 때 아이디로 정보를 찾아옴
@@ -203,7 +204,7 @@ public class UserController {
 
             redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 
-            return "redirect:/main";
+            return "redirect:/";
         }
 
     }
@@ -214,11 +215,10 @@ public class UserController {
                              RedirectAttributes redirectAttributes) {
         //post 접근 불가로 get 변경해둠
         //로그인한 사람이 회원정보의 사람과 같다면 or 권한이 관리자일 경우에만 수정 가능
-
-        model.addAttribute("dto", userService.read(principal.getName()));
-
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
+
+        model.addAttribute("dto", userService.read(principal.getName()));
 
         return "/user/modify";
 
@@ -236,7 +236,7 @@ public class UserController {
 //
 //            redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 //
-//            return "redirect:/main";
+//            return "redirect:/";
 //        }
 
 
@@ -268,7 +268,7 @@ public class UserController {
             userService.modify(userDTO);
             redirectAttributes.addFlashAttribute("result", "회원정보가 수정되었습니다.");
 
-            return "redirect:/main";
+            return "redirect:/";
 
         } else {
 
@@ -294,13 +294,12 @@ public class UserController {
     @GetMapping("/list")
     public String userList(Model model, Principal principal, RedirectAttributes redirectAttributes) {
         //post 접근 불가로 get 변경해둠
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         log.info("현재 로그인 회원 이름 : " + principal.getName());
 
         UserDTO loginUser = userService.read(principal.getName());
-
-        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-        model.addAttribute("categoryList", categoryDTOList);
 
         if ( loginUser.getRole().name() == "ADMIN" ){
 
@@ -312,7 +311,7 @@ public class UserController {
 
             redirectAttributes.addFlashAttribute("result", "열람 권한이 없습니다.");
 
-            return "redirect:/main";
+            return "redirect:/";
         }
 
 
@@ -336,6 +335,7 @@ public class UserController {
                 = ordersService.getOrdersList(principal.getName(), pageable);
 
         log.info("컨트롤러 Hist : " + ordersHistDTOPage);
+        log.info("컨트롤러 Hist 내용 : " + ordersHistDTOPage.getContent());
 
         model.addAttribute("ordersHistDTOPage", ordersHistDTOPage);
         model.addAttribute("page", pageable.getPageNumber());
@@ -362,7 +362,7 @@ public class UserController {
         model.addAttribute("loginUser", loginUser);
 
         List<ProductDTO> productDTOList = productService.userProduct(loginUser.getUserName());
-        log.info(productDTOList);
+        log.info("productDTOList : " + productDTOList.size());
 
         model.addAttribute("productDTOList", productDTOList);
 
@@ -371,8 +371,10 @@ public class UserController {
         Pageable pageable =
                 PageRequest.of(page.isPresent() ? page.get() : 0, 10);
 
-        Page<MainProductDTO> products = productService.getProductImagPageDesc(productSearchDTO, pageable);
+        Page<MainProductDTO> products = productService.getProductImagPageDescuser(productSearchDTO, pageable,loginUser.getUserId() );
+        log.info("productDTOList : " + products.getContent().size());
 
+        log.info(products.getContent());
         model.addAttribute("products", products);
         model.addAttribute("productSearchDTO", productSearchDTO);
         model.addAttribute("maxPage", 10);
@@ -384,7 +386,6 @@ public class UserController {
     @GetMapping("/myreview")
     public String userReview(Model model) {
         //post 접근 불가로 get 변경해둠
-
         List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
         model.addAttribute("categoryList", categoryDTOList);
 

@@ -9,13 +9,17 @@ import com.example.bookshop.entity.QImage;
 import com.example.bookshop.entity.QProduct;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPQLQuery;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import jakarta.persistence.EntityManager;
+import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -225,6 +229,51 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(regDtsAfter(productSearchDTO.getSearchDateType()),
                         searchSellStatusEq(productSearchDTO.getItemSellStatus()),
                         searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
+
+                .orderBy(product.regidate.desc())
+                .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터
+                .limit(pageable.getPageSize()) //size = 10 //10
+                .fetchResults();
+
+        List<MainProductDTO> content = result.getResults();
+        long total = result.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
+    }
+
+
+    @Override
+    public Page<MainProductDTO> getMainProductPageDescuser(ProductSearchDTO productSearchDTO, Pageable pageable, String userId) {
+        //searchQuery를 입력받아서 상품명과 비슷한 걸 찾는다.
+
+        QProduct product = QProduct.product;
+        QImage image = QImage.image;
+
+        QueryResults<MainProductDTO> result = jpaQueryFactory.select(
+                        new QMainProductDTO(
+                                product.pno,
+                                product.seller,
+                                product.productName,
+                                product.writer,
+                                product.publish,
+                                product.productContent,
+                                product.productPrice,
+                                product.productAmount,
+                                product.category.cno,
+                                product.itemSellStatus,
+                                product.regidate,
+                                image.imgUrl
+                        )
+                )
+                .from(image)
+                .join(image.product, product)
+                .where(image.repimgYn.eq("Y")) //대표이미지
+                .where(productNameLike(productSearchDTO.getSearchQuery())) //상품명 검색 입력받은 것과 같은 거
+                .where(regDtsAfter(productSearchDTO.getSearchDateType()),
+                        searchSellStatusEq(productSearchDTO.getItemSellStatus()),
+                        searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
+
+                .where(product.createBy.eq(userId))
                 .orderBy(product.regidate.desc())
                 .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터
                 .limit(pageable.getPageSize()) //size = 10 //10
