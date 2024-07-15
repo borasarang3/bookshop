@@ -5,6 +5,7 @@ import com.example.bookshop.dto.ProductSearchDTO;
 import com.example.bookshop.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Query;
 
 import java.security.Principal;
 
@@ -23,5 +24,6 @@ public interface ProductRepositoryCustom {
     Page<MainProductDTO> getMainProductPageDescuser(ProductSearchDTO productSearchDTO, Pageable pageable, String userId);
 
     Page<MainProductDTO> getMainProductPageDesc(ProductSearchDTO productSearchDTO, Pageable pageable);
+
 
 }

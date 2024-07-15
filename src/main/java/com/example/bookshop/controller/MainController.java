@@ -1,8 +1,6 @@
 package com.example.bookshop.controller;
 
-import com.example.bookshop.dto.CategoryDTO;
-import com.example.bookshop.dto.MainProductDTO;
-import com.example.bookshop.dto.ProductSearchDTO;
+import com.example.bookshop.dto.*;
 import com.example.bookshop.service.CategoryService;
 import com.example.bookshop.service.ImageService;
 import com.example.bookshop.service.ProductService;
@@ -15,6 +13,8 @@ import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class MainController {
     private final UserService userService;
     private final ImageService imageService;
 
-    @GetMapping({"/", "/{page}"})
+    @GetMapping({"/"})
     public String main(ProductSearchDTO productSearchDTO,
                        @PathVariable("page") Optional<Integer> page,
                        Model model){
@@ -62,31 +62,23 @@ public class MainController {
 
     }
 
-//    @GetMapping("/{page}")
-//    public @ResponseBody String mainRest(@RequestBody ProductSearchDTO productSearchDTO,
-//                                         @PathVariable("page") Optional<Integer> page,
-//                                         Model model){
-//
-//        log.info("productSearchDTO : " + productSearchDTO);
-//        log.info("page : " + page);
-//
-//        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
-//        model.addAttribute("categoryList", categoryDTOList);
-//
-//        // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 뒷번호부터 4개
-//        Pageable pageable =
-//                PageRequest.of(page.isPresent() ? page.get() : 0, 4);
-//
-//        Page<MainProductDTO> products = productService.getProductImagPageDesc(productSearchDTO, pageable);
-//
-//        model.addAttribute("products", products);
-//        model.addAttribute("productSearchDTO", productSearchDTO);
-//        model.addAttribute("maxPage", 3);
-//
-//
-//        return "/main";
-//
-//    }
+    @GetMapping("/{page}")
+    public @ResponseBody ResponseEntity mainRest(
+                                         PageRequestDTO pageRequestDTO){
+
+        log.info("pageRequestDTO : " + pageRequestDTO);
+        log.info("현재 page : " + pageRequestDTO.getPage());
+        pageRequestDTO.setSize(4);
+
+        // page 가지고 pageable 생성 // 값이 있으면 가져오고 없으면 뒷번호부터 4개
+
+        PageResponseDTO<MainProductDTO> pageResponseDTO =
+                productService.getMainofProduct( pageRequestDTO);
+
+        log.info(pageResponseDTO);
+        return new ResponseEntity(pageResponseDTO, HttpStatus.OK);
+
+    }
 
 
 }

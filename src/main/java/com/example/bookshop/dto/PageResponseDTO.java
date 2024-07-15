@@ -43,7 +43,7 @@ public class PageResponseDTO<E> {
     this.total = total;
     this.dtoList = dtoList;
 
-    this.end = (int) (Math.ceil(this.page / 10.0)) * 10;
+    this.end = (int) (Math.ceil(this.page / (double)this.size)) * (int) this.size;
 
     this.start = this.end - 9;
 

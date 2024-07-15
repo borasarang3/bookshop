@@ -127,6 +127,21 @@ public class ProductService {
 
     }
 
+    //Rest형식 페이징
+    public PageResponseDTO<MainProductDTO> getMainofProduct(PageRequestDTO pageRequestDTO){
+
+        Page<Product> mainProducts = productRepository.listofMain( pageRequestDTO.getPageable());
+
+        List<MainProductDTO> mainProductDTOS
+                = mainProducts.getContent().stream()
+                .map(product -> modelMapper.map(product, MainProductDTO.class).setImageDTOList(imageRepository.findByProduct(product).stream().map(image -> modelMapper.map(image,ImageDTO.class)).collect(Collectors.toList())) ).collect(Collectors.toList());
+
+        PageResponseDTO<MainProductDTO> mainProductDTOPageResponseDTO  = new PageResponseDTO<>(pageRequestDTO, mainProductDTOS, (int) mainProducts.getTotalElements());
+
+        return mainProductDTOPageResponseDTO;
+
+    }
+
     //검색+페이징+이미지 (내림차순 버전)
     @Transactional(readOnly = true)
     public Page<MainProductDTO> getProductImagPageDesc (ProductSearchDTO productSearchDTO,

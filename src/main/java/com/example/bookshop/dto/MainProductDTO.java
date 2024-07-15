@@ -11,6 +11,7 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -43,9 +44,23 @@ public class MainProductDTO {
 
     private Long reviewCount; //리뷰 수
 
+    private List<ImageDTO> imageDTOList;
+
+    public MainProductDTO setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+        return this;
+    }
+
+    public MainProductDTO setImageDTOList(List<ImageDTO> imageDTOList) {
+        this.imageDTOList = imageDTOList;
+        return this;
+    }
+
     //생성자에 @QueryProjection 어노테이션을 선언하여 Querydsl로 결과 조회시
     // MainitemDTO 객체로 바로 받아오도록 활용
     // select * <<entity x >> dto로 바뀐다. from table
+
+    public MainProductDTO(){}
 
     @QueryProjection
     public MainProductDTO(Long pno, String seller, String productName,

@@ -44,39 +44,15 @@
 
     <!--이미지 카드-->
     <h3 class="text-center mt-5 fw-bold">새로 들어온 책</h3>
-    <div class="row row-cols-1 row-cols-md-6 g-4 mt-3"
-         th:with="start=${(products.number/maxPage) * maxPage + 1}, end=${(products.totalPages == 0) ? 1 : (start + (maxPage -1) < products.totalPages ? start + (maxPage - 1) : products.totalPages)}">
-        <div class="col">
-            <a class="page-link" href="#" th:if="${products.number - 1} >= 0" th:onclick="'javascript:page(' + ${products.number - 1} + ')'">
-                <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
-            </a>
-            <a class="page-link" href="#" th:unless="${products.number - 1} >= 0" th:onclick="'javascript:page(2)'">
-                <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
-            </a>
-        </div>
+    <div class="row row-cols-1 row-cols-md-6 g-4 mt-3">
+        <div class="col-md-2 pagination1"></div>
+        <div class="col-md-8 ">
+            <div class="row row-cols-1 row-cols-md-4 mainlist">
 
-        <div class="col" th:each="product: ${products.getContent()}">
-
-            <a th:href="'/product/read/' + ${product.pno}" style="text-decoration: none">
-                <div class="card h-100 text-center border-0">
-                    <img th:src="${product.imgUrl}" style="height: 100%" class="card-img-top" alt="${product.productName}">
-                    <div class="card-body text-truncate">
-                        <h5 class="card-title" th:text="${product.productName}" style="height: 100%">Card title</h5>
-                    </div>
-                </div>
-            </a>
+            </div>
 
         </div>
-
-        <div class="col">
-            <a class="page-link" href="#" th:if="${products.number + 1} <= 2" th:onclick="'javascript:page(' + ${products.number + 1} + ')'">
-                <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
-            </a>
-            <a class="page-link" href="#" th:unless="${products.number + 1} <= 2" th:onclick="'javascript:page(0)'">
-                <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
-            </a>
-        </div>
-
+        <div class="col-md-2 pagination2"></div>
 
     </div>
     <!--이미지 카드-->
@@ -98,6 +74,101 @@
     }
 
     $(document).ready(function () {
+        let str = "";
+        let str2 = "";
+        let str3 = "";
+        let thispage = 1; //처음 진입했을 때 메인 페이지
+
+        let mainlist = $(".mainlist");
+        let pagination1 = $(".pagination1");
+        let pagination2 = $(".pagination2");
+
+        let showMain = function (page){
+            str = "";
+            str2 = "";
+            str3 = "";
+
+            if (page == null || page=="" || page.length == 0){
+                page = 1;
+            }
+
+            $.ajax({
+                url : "/" + page,
+                type : "get",
+                dataType : "json",
+                success: function (data){
+                    thispage = data.page;
+
+
+                    if ( data== null || data.dtoList == null || data.dtoList.length == 0) {
+                        str += ` <h4 class="text-center">아직 새로 들어온 책이 없습니다.</h4>`;
+                        mainlist.html(str);
+                    } else {
+
+                        console.log(data)
+
+                        for (let i = 0; i < 4; i++){
+
+                            str += `<div class="col"><a href="/product/read/${data.dtoList[i].pno}" style="text-decoration: none">
+                               <div class="card  text-center border-0">
+
+                                    <div class="ratio ratio-1x1">
+                                        <img  src="${data.dtoList[i].imageDTOList[0].imgUrl}"  class="card-img-top" alt="${data.dtoList[i].productName}">
+                                    </div>
+                                   <div class="card-body text-truncate">
+                                    <h5 class="card-title" >${data.dtoList[i].productName}</h5>
+                                   </div>
+                               </div>
+                               </a></div>`
+                        }
+
+                    }
+                    if(data.page == 1){
+                        str2 += `<a class="page-link" href="#"  data-num="3">
+                                <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
+                                </a>`
+
+                    }else {
+                        str2 = `<a class="page-link" href="#"  data-num="${data.page - 1}">
+                                    <i class="fa-solid fa-chevron-left fa-4x m-5 p-2"></i>
+                                </a>`
+                    }
+
+
+                    if(data.page + 1 <= 3){
+                        str3 += ` <a class="page-link" href="#" data-num="${data.page + 1}">
+                                <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
+                                </a>`
+                    }else {
+                        str3 += `<a class="page-link" href="#" data-num="1">
+                                    <i class="fa-solid fa-chevron-right fa-4x m-5 p-2"></i>
+                                </a>`
+                    }
+                    pagination1.html(str2);
+                    pagination2.html(str3);
+                    mainlist.html(str);
+                },
+                error: function (result, error){
+                    alert("에러 발생 : " + result.responseText)
+                    alert("에러 발생 : " + error.responseText)
+                }
+            })
+
+        }
+
+        pagination1.on("click", "a", function (e){
+            e.preventDefault()
+            let datanum = $(this).data("num");
+            showMain(datanum);
+        })
+
+        pagination2.on("click", "a", function (e){
+            e.preventDefault()
+            let datanum = $(this).data("num");
+            showMain(datanum);
+        })
+
+        showMain(1);
 
     })
 
