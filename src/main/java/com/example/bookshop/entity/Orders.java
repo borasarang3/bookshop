@@ -59,7 +59,7 @@ public class Orders {
 
         orders.setOrderStatus(OrderStatus.ORDER); //주문상태
         orders.setOrderDate(LocalDateTime.now()); //주문시간
-        if (userMember.getAddress() != null) {
+        if (userMember.getAddress() != null || userMember.getAddress() != "" || userMember.getAddress().length() != 0 ) {
             orders.setDelivery(userMember.getAddress()); //주소
         } else {
             orders.setDelivery("미설정");

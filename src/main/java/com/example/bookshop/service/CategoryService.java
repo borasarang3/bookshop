@@ -1,10 +1,13 @@
 package com.example.bookshop.service;
 
 import com.example.bookshop.dto.CategoryDTO;
+import com.example.bookshop.dto.ProductDTO;
 import com.example.bookshop.dto.UserDTO;
 import com.example.bookshop.entity.Category;
+import com.example.bookshop.entity.Product;
 import com.example.bookshop.entity.UserMember;
 import com.example.bookshop.repository.CategoryRepository;
+import com.example.bookshop.repository.ProductRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
     private final ModelMapper modelMapper;
 
     //전체 카테고리 갖고 오기
@@ -37,7 +41,6 @@ public class CategoryService {
         categoryDTOList.forEach(categoryDTO -> log.info(categoryDTO));
 
         return categoryDTOList;
-
 
     }
 
@@ -108,19 +111,26 @@ public class CategoryService {
 
     }
 
-    public void remove(String cname) {
+    public String remove(String cname) {
 
         log.info("서비스에 온 카테고리 이름 : " + cname);
 
-        Category category = categoryRepository.findByCname(cname);
+        List<Product> productList = productRepository.findByCategory_Cname(cname);
+        productList.forEach(product -> log.info(product));
+        if (productList == null || productList.size() == 0){
+            Category category = categoryRepository.findByCname(cname);
 
-        if (category == null){
-            log.info("null임");
-            throw new IllegalStateException("카테고리를 찾을 수 없습니다.");
+            if (category == null){
+                log.info("null임");
+                throw new IllegalStateException("카테고리를 찾을 수 없습니다.");
+            }
+            categoryRepository.deleteById(category.getCno());
+            return "delete";
+
+        } else {
+            log.info("리스트 존재");
+            return null;
         }
-
-        categoryRepository.deleteById(category.getCno());
-
     }
 
 

@@ -122,11 +122,17 @@ public class CategoryController {
 
     @ResponseBody
     @DeleteMapping("/remove")
-    public void categoryRemove(String cname){
+    public String categoryRemove(String cname){
 
         log.info("받은 카테고리 이름 : " + cname);
 
-        categoryService.remove(cname);
+       String result = categoryService.remove(cname);
+
+       if (result == null){
+           return "cancel";
+       } else {
+           return "delete";
+       }
     }
 
 

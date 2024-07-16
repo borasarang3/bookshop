@@ -100,6 +100,17 @@
 
         //체크박스
         $("input[name=cartChkBox]").change(function () {
+            // 체크박스 그룹에 속한 체크박스 선택 개수 확인
+            const checkedChkBoxes = $("input[name=cartChkBox]:checked");
+            const totalChkBoxes = $("input[name=cartChkBox]").length;
+
+            // 모든 체크박스가 선택되어 있지 않으면 "전체 선택" 체크박스 해제
+            if (checkedChkBoxes.length !== totalChkBoxes) {
+                $("#checkall").prop("checked", false);
+            } else {
+                $("#checkall").prop("checked", true);
+            }
+
             //체크박스가 바뀌었을 때
             getOrderTotalPrice();
         })

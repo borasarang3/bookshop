@@ -18,6 +18,7 @@ public class OrdersHistDTO {
     private Long ordersId; //주문아이디
     private String orderDate; //주문 날짜
     private OrderStatus orderStatus; //주문상태
+    private String delivery; //배송주소
 
     //주문상품 리스트
     private List<OrdersItemDTO> ordersItemDTOList = new ArrayList<>();
@@ -31,6 +32,8 @@ public class OrdersHistDTO {
                 .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
                                                     // 2024-06-07 10:30:23 로 표기
         this.orderStatus = orders.getOrderStatus();
+
+        this.delivery = orders.getDelivery();
 
     }
 

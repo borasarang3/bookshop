@@ -106,9 +106,9 @@
 
             <!-- 권한 -->
             <div class="form-floating mb-3 d-grid gap-2 col-6 mx-auto"> <!--값 오는 거 확인 후 히든으로 바꾸기-->
-                <input type="text" name="role" th:field="*{role}" class="form-control" id="floatingInput role" placeholder="권한" readonly>
-                <label for="floatingInput role">
-                    <i class="fa-solid fa-userMember-shield"></i> 권한
+                <input type="hidden" name="role" th:field="*{role}" class="form-control" id="floatingInput role" placeholder="권한" readonly>
+                <label for="floatingInput role" hidden="">
+                    <i class="fa-solid fa-userMember-shield">권한</i>
                 </label>
             </div>
 

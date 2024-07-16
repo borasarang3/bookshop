@@ -31,5 +31,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, Queryds
     @Query("select p from Product p join Image i on p.pno = i.product.pno where i.repimgYn = 'Y' order by p.regidate desc")
     Page<Product> listofMain(Pageable pageable);
 
+    List<Product> findByCategory_Cname(String cname);
+
 
 }

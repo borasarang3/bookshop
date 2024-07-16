@@ -330,7 +330,7 @@ public class UserController {
         model.addAttribute("loginUser", loginUser);
 
         Pageable pageable = PageRequest
-                .of(page.isPresent() ? page.get() : 0, 3);
+                .of(page.isPresent() ? page.get() : 0, 10);
         Page<OrdersHistDTO> ordersHistDTOPage
                 = ordersService.getOrdersList(principal.getName(), pageable);
 

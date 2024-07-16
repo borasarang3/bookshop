@@ -69,7 +69,7 @@
             console.log("find : " + find)
             let inp = `<input type="hidden" class="ss" name="userId" value="${find}">`
             console.log("inp : " + inp);
-            formBs.insertAdjacentHTML("afterend", inp);
+            formBs.insertAdjacentHTML("beforeend", inp);
 
             formBs.action = `/user/findUser`;
             formBs.method = "post";

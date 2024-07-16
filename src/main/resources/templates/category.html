@@ -38,8 +38,7 @@
                         data-bs-toggle="modal" data-bs-target="#new-modal">관리</button>
             <button type="button" class="btn btn-outline-secondary btn-sm me-md-2 modiBtn"
                         data-bs-toggle="modal" data-bs-target="#new-modal">수정</button>
-            <button type="button" class="btn btn-outline-secondary btn-sm removBtn" disabled
-                   >삭제</button>
+            <button type="button" class="btn btn-outline-secondary btn-sm removBtn">삭제</button>
 
         </li>
 
@@ -304,12 +303,18 @@
                 data : {"cname" : category},
                 dataType : "text",
                 success : function (result){
+                    if (result == "cancel"){
+                        alert("등록된 상품이 존재하는 카테고리는 삭제할 수 없습니다.")
 
-                    alert("카테고리가 삭제되었습니다.")
+                        categoryName.val("");
+                        location.reload();
 
-                    categoryName.val("");
-                    location.reload();
+                    } else if (result == "delete"){
+                        alert("카테고리가 삭제되었습니다.")
 
+                        categoryName.val("");
+                        location.reload();
+                    }
                 },
                 error : function (result){
                     console.log(result.responseText)

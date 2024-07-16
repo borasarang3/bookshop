@@ -13,6 +13,8 @@ import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 import org.modelmapper.ModelMapper;
 
+import java.util.List;
+
 @Getter
 @Setter
 @ToString

@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -170,6 +171,7 @@ public class UserService implements UserDetailsService {
 
         List<UserDTO> userDTOList = userMemberList.stream()
                 .map(userMember -> modelMapper.map(userMember, UserDTO.class))
+                .sorted(Comparator.comparing(UserDTO::getModidate).reversed())
                 .collect(Collectors.toList());
 
         userDTOList.forEach(userDTO -> log.info(userDTO));

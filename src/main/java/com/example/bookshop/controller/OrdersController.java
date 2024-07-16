@@ -49,7 +49,10 @@ public class OrdersController {
     @PostMapping("")
     public String orders(Long[] cartChkBox,
                        RedirectAttributes redirectAttributes,
-                       Principal principal){
+                       Principal principal, Model model){
+
+        List<CategoryDTO> categoryDTOList = categoryService.allCategoryList();
+        model.addAttribute("categoryList", categoryDTOList);
 
         log.info("카트에서 가져온 아이템 카트아이템 번호 : " + Arrays.toString(cartChkBox));
 
@@ -71,6 +74,8 @@ public class OrdersController {
         List<CartDetailDTO> cartDetailDTOList = cartService.findOrder(cartChkBox);
 
         cartDetailDTOList.forEach(cartDetailDTO -> log.info( "값 : " + cartDetailDTO));
+
+        model.addAttribute("cartDetailDTOList", cartDetailDTOList);
 
         return "/orders";
     }
