@@ -46,6 +46,8 @@ public class MainProductDTO {
 
     private List<ImageDTO> imageDTOList;
 
+    private String createBy; //만든 사람의 아이디
+
     public MainProductDTO setImgUrl(String imgUrl) {
         this.imgUrl = imgUrl;
         return this;
@@ -102,6 +104,29 @@ public class MainProductDTO {
         this.regidate = regidate;
         this.imgUrl = imgUrl;
         this.reviewCount = reviewCount;
+
+    }
+
+    @QueryProjection
+    public MainProductDTO(Long pno, String seller, String productName,
+                          String writer, String publish, String productContent,
+                          Long productPrice, Long productAmount, Long categoryid,
+                          ItemSellStatus itemSellStatus, LocalDateTime regidate,
+                          String imgUrl, Long reviewCount, String createBy){
+        this.pno = pno;
+        this.seller = seller;
+        this.productName = productName;
+        this.writer = writer;
+        this.publish = publish;
+        this.productContent = productContent;
+        this.productPrice = productPrice;
+        this.productAmount = productAmount;
+        this.categoryid = categoryid;
+        this.itemSellStatus = itemSellStatus;
+        this.regidate = regidate;
+        this.imgUrl = imgUrl;
+        this.reviewCount = reviewCount;
+        this.createBy = createBy;
 
     }
 

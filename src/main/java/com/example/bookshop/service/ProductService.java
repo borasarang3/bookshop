@@ -401,7 +401,16 @@ public class ProductService {
     }
 
     //상품 삭제
-    public void productRemove(ProductDTO productDTO) {
+    public void productRemove(ProductDTO productDTO) throws Exception {
+
+        Product product = productRepository.findById(productDTO.getPno())
+                .orElseThrow(EntityNotFoundException::new);
+
+        List<Image> imageList = imageRepository.findByProduct(product);
+        for (Image image : imageList){
+            imageService.deleteImage(image.getIno());
+            imageRepository.deleteById(image.getIno());
+        }
 
         productRepository.deleteById(productDTO.getPno());
 

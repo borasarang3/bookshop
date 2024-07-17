@@ -272,7 +272,6 @@ public class ProductRepositoryCustomImpl implements ProductRepositoryCustom {
                 .where(regDtsAfter(productSearchDTO.getSearchDateType()),
                         searchSellStatusEq(productSearchDTO.getItemSellStatus()),
                         searchByLike(productSearchDTO.getSearchBy(), productSearchDTO.getSearchQuery()))
-
                 .where(product.createBy.eq(userId))
                 .orderBy(product.regidate.desc())
                 .offset(pageable.getOffset()) // 몇 번부터 1번 글부터 //11번 글부터

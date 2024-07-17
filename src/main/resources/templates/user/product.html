@@ -34,7 +34,7 @@
             <tbody>
 
             <tr role="row"  th:each="dto: ${products.content}">
-                <th:block th:if="${dto.seller == loginUser.userName}">
+
                     <th scope="row" >[[${#temporals.format(dto.regidate, 'yyyy-MM-dd')}]]</th>
                     <th scope="row" class="readBtn" >
                         <a class="link-dark " th:text="${dto.productName}" th:href="@{'/product/modify/' + ${dto.pno}}" style="text-decoration: none"></a>
@@ -44,7 +44,7 @@
                     <th scope="row">[[${dto.productPrice}]]</th>
                     <!--리뷰 구현 후 리뷰 개수 반영하기-->
                     <th scope="row">0</th>
-                </th:block>
+
             </tr>
 
             </tbody>

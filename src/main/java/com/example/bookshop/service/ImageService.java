@@ -94,7 +94,7 @@ public class ImageService {
             //기존 물리적 이미지파일을 삭제
             if (!StringUtils.isEmpty(savedItemImg.getImgName())) {
                 if (savedItemImg.getProduct() != null){
-                    fileService.deleteFile(productImgLocation + "/" + savedItemImg.getImgName() );
+                    fileService.deleteFile(productImgLocation + "/" + savedItemImg.getOriImgName() );
                 }
             }
 
@@ -111,6 +111,19 @@ public class ImageService {
             }
 
         }
+    }
+
+    public void deleteImage (Long ino) throws Exception {
+
+            Image savedItemImg = imageRepository
+                    .findById(ino).orElseThrow(EntityNotFoundException::new);
+
+            if (!StringUtils.isEmpty(savedItemImg.getImgName())) {
+                if (savedItemImg.getProduct() != null){
+                    fileService.deleteFile(productImgLocation + "/" + savedItemImg.getOriImgName() );
+                }
+            }
+
     }
 
 

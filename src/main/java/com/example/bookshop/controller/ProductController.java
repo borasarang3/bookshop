@@ -215,7 +215,7 @@ public class ProductController {
 
     @PostMapping("/remove")
     public String productRemove(ProductDTO productDTO,
-                                RedirectAttributes redirectAttributes){
+                                RedirectAttributes redirectAttributes) throws Exception {
 
         productService.productRemove(productDTO);
 

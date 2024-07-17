@@ -43,11 +43,12 @@
 
     <!--이미지 카드-->
     <h3 class="text-center mt-5 fw-bold">새로 들어온 책</h3>
+    <h4 class="text-center blank">아직 새로 들어온 책이 없습니다.</h4>
+
     <div class="row row-cols-1 row-cols-md-6 g-4 mt-3">
         <div class="col-md-2 pagination1"></div>
         <div class="col-md-8 ">
             <div class="row row-cols-1 row-cols-md-4 mainlist">
-
             </div>
 
         </div>
@@ -106,13 +107,12 @@
 
 
                     if ( data== null || data.dtoList == null || data.dtoList.length == 0) {
-                        str += ` <h4 class="text-center">아직 새로 들어온 책이 없습니다.</h4>`;
-                        mainlist.html(str);
+                        return null;
                     } else {
-
+                        $(".blank").html("")
                         console.log(data)
 
-                        for (let i = 0; i < 4; i++){
+                        for (let i = 0; i < data.dtoList.length; i++){
 
                             str += `<div class="col"><a href="/product/read/${data.dtoList[i].pno}" style="text-decoration: none">
                                <div class="card  text-center border-0">
