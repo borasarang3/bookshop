@@ -55,13 +55,13 @@
         <div class="col-6">
             <div class="input-group mb-1">
                 <span class="input-group-text" id="productPrice">가격</span>
-                <input type="text" th:value="${productDTO.productPrice}" name="productPrice" class="form-control productPrice" placeholder="판매할 가격을 입력해주세요." required>
+                <input type="number" th:value="${productDTO.productPrice}" name="productPrice" class="form-control productPrice" placeholder="판매할 가격을 숫자로 입력해주세요." min="1" required>
             </div>
         </div>
         <div class="col-6">
             <div class="input-group mb-1">
                 <span class="input-group-text" id="productAmount">재고</span>
-                <input type="text" th:value="${productDTO.productAmount}" name="productAmount" class="form-control" placeholder="판매할 상품의 수량을 입력해주세요." required>
+                <input type="number" th:value="${productDTO.productAmount}" name="productAmount" class="form-control" placeholder="판매할 상품의 수량을 숫자로 입력해주세요." min="1" required>
             </div>
         </div>
         <div class="col-12">
